@@ -27,7 +27,6 @@ import type {
   StreamFn,
 } from '@earendil-works/pi-agent-core'
 import type {
-  KnownProvider,
   Model,
   ProviderId,
   SimpleStreamOptions,
@@ -130,8 +129,10 @@ export function resolvePiModel(opts: {
   const model =
     provider === MOONSHOT_PROVIDER
       ? getMoonshotModel(opts.model)
-      : getModel(
-          provider as KnownProvider,
+      : // pi-ai 0.85: `getModel` reads the generated catalog and is typed on its providers
+        // (`BuiltinProvider`), a subset of `KnownProvider`; unknown ids fall through to the throw.
+        getModel(
+          provider as Parameters<typeof getModel>[0],
           opts.model as Parameters<typeof getModel>[1]
         )
 
