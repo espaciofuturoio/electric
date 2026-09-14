@@ -62,7 +62,10 @@ defmodule Electric.Application do
       [{Electric.StackSupervisor, Keyword.put(config, :name, Electric.StackSupervisor)}],
       api_server_children(config),
       prometheus_endpoint(Electric.Config.get_env(:prometheus_port)),
-      live_dashboard_endpoint(Electric.Config.get_env(:live_dashboard_port))
+      live_dashboard_endpoint(
+        Electric.Config.get_env(:live_dashboard_port),
+        Keyword.fetch!(config, :telemetry_opts)
+      )
     ])
   end
 
@@ -316,13 +319,14 @@ defmodule Electric.Application do
     ]
   end
 
-  defp live_dashboard_endpoint(nil), do: []
+  defp live_dashboard_endpoint(nil, _telemetry_opts), do: []
 
-  defp live_dashboard_endpoint(_port) do
-    [
-      {Phoenix.PubSub, name: Electric.PubSub},
-      Electric.LiveDashboard.Endpoint
-    ]
+  defp live_dashboard_endpoint(_port, telemetry_opts) do
+    Electric.LiveDashboard.Telemetry.put_telemetry_opts(telemetry_opts)
+
+    [{Phoenix.PubSub, name: Electric.PubSub}] ++
+      Electric.LiveDashboard.Telemetry.children() ++
+      [Electric.LiveDashboard.Endpoint]
   end
 
   @doc false

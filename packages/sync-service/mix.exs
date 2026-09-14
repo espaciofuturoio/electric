@@ -106,7 +106,11 @@ defmodule Electric.MixProject do
         {:req, "~> 0.5"},
         {:stream_split, "~> 0.1"},
         {:tz, "~> 0.28"},
-        {:phoenix_live_dashboard, "~> 0.8"}
+        {:phoenix_live_dashboard, "~> 0.8"},
+        # The dashboard's Metrics page and its poller (also pulled in by electric_telemetry, but the
+        # dashboard must compile for every Mix target).
+        {:telemetry_metrics, "~> 1.1"},
+        {:telemetry_poller, "~> 1.3"}
       ],
       dev_and_test_deps(),
       telemetry_deps(Mix.target())
