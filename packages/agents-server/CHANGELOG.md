@@ -1,5 +1,16 @@
 # @electric-ax/agents-server
 
+## 0.6.5
+
+### Patch Changes
+
+- b149327: Bump `@earendil-works/pi-ai` and `@earendil-works/pi-agent-core` to `^0.85.1` (catalogs regenerated from models.dev: Sonnet 5, Fable 5, GPT-5.6, Kimi K3 across providers; provider-verified reasoning levels). `resolvePiModel` follows `getModel`'s narrower `BuiltinProvider` typing.
+- 3e690ce: Update the agents runtime to the renamed Earendil Works pi packages and latest OpenAI/Codex model catalog. Preserve custom provider id compatibility, move built-in Codex defaults to GPT-5.6 models, and remove deprecated direct pi-agent-core dependencies from agents examples.
+- c573ace: Fix `runFinished` child wakes being delivered only for the last child spawned. The wake registry read the deleted row id from `old_value` on shape delete messages, but Electric's `replica: full` deletes carry the row in `value`, so every delete reset the whole in-memory registration cache (and the shape log replayed those deletes on restart). Read the id from `value` first and only fall back to a full reset when no id is available.
+- Updated dependencies [b149327]
+- Updated dependencies [3e690ce]
+  - @electric-ax/agents-runtime@0.6.4
+
 ## 0.6.4
 
 ### Patch Changes

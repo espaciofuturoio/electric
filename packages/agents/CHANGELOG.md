@@ -1,5 +1,15 @@
 # @electric-ax/agents
 
+## 0.6.4
+
+### Patch Changes
+
+- b149327: Bump `@earendil-works/pi-ai` and `@earendil-works/pi-agent-core` to `^0.85.1` (catalogs regenerated from models.dev: Sonnet 5, Fable 5, GPT-5.6, Kimi K3 across providers; provider-verified reasoning levels). `resolvePiModel` follows `getModel`'s narrower `BuiltinProvider` typing.
+- 3e690ce: Update the agents runtime to the renamed Earendil Works pi packages and latest OpenAI/Codex model catalog. Preserve custom provider id compatibility, move built-in Codex defaults to GPT-5.6 models, and remove deprecated direct pi-agent-core dependencies from agents examples.
+- Updated dependencies [b149327]
+- Updated dependencies [3e690ce]
+  - @electric-ax/agents-runtime@0.6.4
+
 ## 0.6.3
 
 ### Patch Changes
