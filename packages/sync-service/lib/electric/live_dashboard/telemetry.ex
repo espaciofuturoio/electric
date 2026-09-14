@@ -81,8 +81,11 @@ defmodule Electric.LiveDashboard.Telemetry do
 
   defp electric_metrics(opts) do
     if Code.ensure_loaded?(ElectricTelemetry.ApplicationTelemetry) do
+      # Stack metrics are defined per stack (`keep_for_stack`); this process serves one stack.
+      stack_opts = Map.put(opts, :stack_id, Electric.Config.get_env(:provided_database_id))
+
       ElectricTelemetry.ApplicationTelemetry.metrics(opts) ++
-        ElectricTelemetry.StackTelemetry.metrics(opts)
+        ElectricTelemetry.StackTelemetry.metrics(stack_opts)
     else
       []
     end
