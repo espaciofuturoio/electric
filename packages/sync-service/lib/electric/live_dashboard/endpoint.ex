@@ -23,6 +23,11 @@ defmodule Electric.LiveDashboard.Endpoint do
     gzip: false,
     only: ~w(assets fonts images priv)
 
+  # "Request Logger" page: stream requests that carry the signed token (param or cookie).
+  plug Phoenix.LiveDashboard.RequestLogger,
+    param_key: "request_logger",
+    cookie_key: "request_logger"
+
   # Session configuration for LiveView
   plug Plug.Session,
     store: :cookie,

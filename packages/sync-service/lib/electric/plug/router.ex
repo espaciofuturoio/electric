@@ -20,6 +20,7 @@ defmodule Electric.Plug.Router do
   plug Electric.Plug.TraceContextPlug
   plug Plug.Telemetry, event_prefix: [:electric, :routing]
   plug Plug.Logger, log: :debug
+  plug Electric.Plug.LiveDashboardRequestLoggerPlug, param_key: "request_logger"
 
   with_telemetry Sentry.PlugCapture do
     plug Sentry.PlugContext
