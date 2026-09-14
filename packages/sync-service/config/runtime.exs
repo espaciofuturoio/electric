@@ -455,12 +455,22 @@ if live_dashboard_port do
       do: {0, 0, 0, 0, 0, 0, 0, 0},
       else: {0, 0, 0, 0}
 
+  # Behind a reverse proxy the LiveView socket is opened from the public origin; without this the
+  # endpoint answers "Could not check origin" and every page is frozen at its first render
+  # (no metrics, no request logger). Comma-separated origins, e.g. "https://electric.example.com".
+  dashboard_origins =
+    case env!("ELECTRIC_LIVE_DASHBOARD_ORIGINS", :string, nil) do
+      nil -> nil
+      list -> list |> String.split(",") |> Enum.map(&String.trim/1) |> Enum.reject(&(&1 == ""))
+    end
+
   config :electric, Electric.LiveDashboard.Endpoint,
     adapter: Bandit.PhoenixAdapter,
     http: [
       port: live_dashboard_port,
       ip: dashboard_ip
     ],
+    check_origin: dashboard_origins || true,
     server: true,
     render_errors: [
       formats: [html: Electric.LiveDashboard.ErrorView],
