@@ -1,5 +1,6 @@
 ---
 '@electric-ax/agents-runtime': patch
+'@electric-ax/agents': patch
 '@electric-ax/agents-server-ui': patch
 '@electric-ax/agents-mobile': patch
 'electric-ax': patch
