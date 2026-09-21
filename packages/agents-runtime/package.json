@@ -87,7 +87,7 @@
     "./package.json": "./package.json"
   },
   "peerDependencies": {
-    "@tanstack/react-db": ">=0.1.78",
+    "@tanstack/react-db": ">=0.4.0",
     "dockerode": ">=5.0.0",
     "e2b": ">=2.0.0",
     "react": ">=18"
@@ -116,7 +116,7 @@
     "@mozilla/readability": "^0.6.0",
     "@sinclair/typebox": "^0.34.48",
     "@standard-schema/spec": "^1.1.0",
-    "@tanstack/db": "^0.6.6",
+    "@tanstack/db": "^0.9.2",
     "ajv": "^8.18.0",
     "cron-parser": "^5.5.0",
     "diff": "^9.0.0",
@@ -131,7 +131,7 @@
   },
   "devDependencies": {
     "@durable-streams/server": "^0.3.7",
-    "@tanstack/react-db": "^0.1.85",
+    "@tanstack/react-db": "^0.4.1",
     "@types/dockerode": "^4.0.1",
     "@types/jsdom": "^27.0.0",
     "@types/node": "^22.19.15",
