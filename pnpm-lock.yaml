@@ -85,7 +85,7 @@ importers:
     dependencies:
       '@durable-streams/state':
         specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.6.7(typescript@5.8.3))
+        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.8.3))
       '@electric-ax/agents-runtime':
         specifier: workspace:*
         version: link:../../packages/agents-runtime
@@ -99,11 +99,11 @@ importers:
         specifier: ^0.34.0
         version: 0.34.49
       '@tanstack/db':
-        specifier: ^0.6.0
-        version: 0.6.7(typescript@5.8.3)
+        specifier: ^0.9.2
+        version: 0.9.2(typescript@5.8.3)
       '@tanstack/react-db':
-        specifier: ^0.1.85
-        version: 0.1.85(react@19.2.5)(typescript@5.8.3)
+        specifier: ^0.4.1
+        version: 0.4.1(react@19.2.5)(typescript@5.8.3)
       react:
         specifier: ^19.2.4
         version: 19.2.5
@@ -193,7 +193,7 @@ importers:
     dependencies:
       '@durable-streams/state':
         specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.6.7(typescript@5.8.3))
+        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.8.3))
       '@electric-ax/agents-runtime':
         specifier: workspace:*
         version: link:../../packages/agents-runtime
@@ -204,11 +204,11 @@ importers:
         specifier: ^0.34.0
         version: 0.34.49
       '@tanstack/db':
-        specifier: ^0.6.6
-        version: 0.6.7(typescript@5.8.3)
+        specifier: ^0.9.2
+        version: 0.9.2(typescript@5.8.3)
       '@tanstack/react-db':
-        specifier: ^0.1.85
-        version: 0.1.85(react@19.2.5)(typescript@5.8.3)
+        specifier: ^0.4.1
+        version: 0.4.1(react@19.2.5)(typescript@5.8.3)
       d3-force:
         specifier: ^3.0.0
         version: 3.0.0
@@ -1529,7 +1529,7 @@ importers:
     dependencies:
       '@durable-streams/state':
         specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.6.7(typescript@5.9.3))
+        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.9.3))
       '@earendil-works/pi-agent-core':
         specifier: ^0.85.1
         version: 0.85.1(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(ws@8.20.0)(zod@4.3.6)
@@ -1708,14 +1708,14 @@ importers:
         specifier: ~7.2.0
         version: 7.2.0(expo@54.0.35)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       '@tanstack/db':
-        specifier: ^0.6.5
-        version: 0.6.7(typescript@5.9.3)
+        specifier: ^0.9.2
+        version: 0.9.2(typescript@5.9.3)
       '@tanstack/electric-db-collection':
-        specifier: ^0.3.5
-        version: 0.3.5(typescript@5.9.3)
+        specifier: ^0.4.10
+        version: 0.4.10(typescript@5.9.3)
       '@tanstack/react-db':
-        specifier: ^0.1.85
-        version: 0.1.85(react@19.1.0)(typescript@5.9.3)
+        specifier: ^0.4.1
+        version: 0.4.1(react@19.1.0)(typescript@5.9.3)
       expo:
         specifier: 54.0.35
         version: 54.0.35(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.24)(react-native-webview@13.15.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)(typescript@5.9.3)
@@ -1821,7 +1821,7 @@ importers:
         version: 0.2.6
       '@durable-streams/state':
         specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.6.7(typescript@5.9.3))
+        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.9.3))
       '@earendil-works/pi-agent-core':
         specifier: ^0.85.1
         version: 0.85.1(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(ws@8.20.0)(zod@4.3.6)
@@ -1841,8 +1841,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       '@tanstack/db':
-        specifier: ^0.6.6
-        version: 0.6.7(typescript@5.9.3)
+        specifier: ^0.9.2
+        version: 0.9.2(typescript@5.9.3)
       ajv:
         specifier: ^8.18.0
         version: 8.20.0
@@ -1885,10 +1885,10 @@ importers:
     devDependencies:
       '@durable-streams/server':
         specifier: ^0.3.7
-        version: 0.3.7(@tanstack/db@0.6.7(typescript@5.9.3))
+        version: 0.3.7(@tanstack/db@0.9.2(typescript@5.9.3))
       '@tanstack/react-db':
-        specifier: ^0.1.85
-        version: 0.1.85(react@19.2.0)(typescript@5.9.3)
+        specifier: ^0.4.1
+        version: 0.4.1(react@19.2.0)(typescript@5.9.3)
       '@types/dockerode':
         specifier: ^4.0.1
         version: 4.0.1
@@ -1927,10 +1927,10 @@ importers:
         version: 0.2.6
       '@durable-streams/server':
         specifier: ^0.3.7
-        version: 0.3.7(@tanstack/db@0.6.7(typescript@5.8.3))
+        version: 0.3.7(@tanstack/db@0.9.2(typescript@5.8.3))
       '@durable-streams/state':
         specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.6.7(typescript@5.8.3))
+        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.8.3))
       '@earendil-works/pi-agent-core':
         specifier: ^0.85.1
         version: 0.85.1(zod@4.4.3)
@@ -2052,7 +2052,7 @@ importers:
         version: 0.2.6
       '@durable-streams/state':
         specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.6.7(typescript@5.9.3))
+        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.9.3))
       '@electric-ax/agents-runtime':
         specifier: workspace:*
         version: link:../agents-runtime
@@ -2063,14 +2063,14 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2(react@19.1.0)
       '@tanstack/db':
-        specifier: ^0.6.6
-        version: 0.6.7(typescript@5.9.3)
+        specifier: ^0.9.2
+        version: 0.9.2(typescript@5.9.3)
       '@tanstack/electric-db-collection':
-        specifier: ^0.3.5
-        version: 0.3.5(typescript@5.9.3)
+        specifier: ^0.4.10
+        version: 0.4.10(typescript@5.9.3)
       '@tanstack/react-db':
-        specifier: ^0.1.85
-        version: 0.1.85(react@19.1.0)(typescript@5.9.3)
+        specifier: ^0.4.1
+        version: 0.4.1(react@19.1.0)(typescript@5.9.3)
       '@tanstack/react-router':
         specifier: ^1.167.4
         version: 1.168.23(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -2170,7 +2170,7 @@ importers:
         version: 0.2.6
       '@durable-streams/state':
         specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.6.7(typescript@5.9.3))
+        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.9.3))
       '@electric-ax/agents':
         specifier: workspace:*
         version: link:../agents
@@ -2181,11 +2181,11 @@ importers:
         specifier: ^1.5.22
         version: link:../typescript-client
       '@tanstack/db':
-        specifier: ^0.6.6
-        version: 0.6.7(typescript@5.9.3)
+        specifier: ^0.9.2
+        version: 0.9.2(typescript@5.9.3)
       '@tanstack/react-db':
-        specifier: ^0.1.85
-        version: 0.1.85(react@19.2.0)(typescript@5.9.3)
+        specifier: ^0.4.1
+        version: 0.4.1(react@19.2.0)(typescript@5.9.3)
       commander:
         specifier: ^13.1.0
         version: 13.1.0
@@ -4757,8 +4757,8 @@ packages:
   '@electric-sql/client@1.2.0':
     resolution: {integrity: sha512-K/MEjti3UF4aPKJJqO6Tp4f5noqc2/3icU1NPdpKfQaHwbzGtEX2aJmL2vxTEUJbfyrISkPKbOPnrz/lAvw1Vg==}
 
-  '@electric-sql/client@1.5.20':
-    resolution: {integrity: sha512-Ftf+ze/rZK9dBzvZqW7wrS74aQBToUlhQeUFm7KCTfOCkNJZ+7iZMm9JW/NjyIQjPOz4ApXg3VWOpeCbzsU3IQ==}
+  '@electric-sql/client@1.5.28':
+    resolution: {integrity: sha512-b0cym3YWXL6PbQmEF0xDRsLt2xgXX46stvOSRAIXRPAP6dLZIHZL0o0HxeTdsZ27L3PbIg6Pw6KnyanRVGtWPA==}
     hasBin: true
 
   '@electric-sql/d2mini@0.1.8':
@@ -9962,6 +9962,11 @@ packages:
     peerDependencies:
       typescript: '>=4.7'
 
+  '@tanstack/db-ivm@0.1.22':
+    resolution: {integrity: sha512-vpNIY6QnvFiVGPwdMVnh1OAZyFLioFkM5gQAqefghvgDhCMmWUPjYka2gw6w+2TBy742zsGPtLnpxBzUKXo9Jw==}
+    peerDependencies:
+      typescript: '>=4.7'
+
   '@tanstack/db@0.0.27':
     resolution: {integrity: sha512-zFrfYxBF+8zbxlp0nXtcJnLaj0ZN5sxij3F0r+mVFVC1GNHcgJFZp81RuMJbx9nuC4c2h3P9r2Mb81e6wnJyeA==}
     peerDependencies:
@@ -9979,6 +9984,11 @@ packages:
 
   '@tanstack/db@0.6.7':
     resolution: {integrity: sha512-nCwOhNXogu3JHdkNPXX6+B8aL0F4wVe0CwLvNS7ccCQ6m9147L8qJewL4IZVyACQDsLGs5MKg91x+VUiD+MplQ==}
+    peerDependencies:
+      typescript: '>=4.7'
+
+  '@tanstack/db@0.9.2':
+    resolution: {integrity: sha512-jeyKbppXwjPNHe0GEVIvsvtirDCxjbPR2xphQaNjgteR15Y+Qnm+6IQNcd3zJ+98uJZ3ot9nagV3UNI+ckVRhQ==}
     peerDependencies:
       typescript: '>=4.7'
 
@@ -10015,8 +10025,8 @@ packages:
   '@tanstack/electric-db-collection@0.2.8':
     resolution: {integrity: sha512-vxs+ne3WKcIJuxJCU7X+vv8DUwmqB+229MFqoF1mJQcvZrs2aPkA5UJQ0P6Y3TSLQ305Mx1ypnuDlF5buzE/mg==}
 
-  '@tanstack/electric-db-collection@0.3.5':
-    resolution: {integrity: sha512-s4enFmMcpJc5Ri6EpmLHIDQppYzJpeLrtEEPSCxJdJehi1VfUbl0NshyQlyc0Umjqbh5HDeGa0qR33cLDjtH/g==}
+  '@tanstack/electric-db-collection@0.4.10':
+    resolution: {integrity: sha512-eGpvLkCi1UVB9/4vbwgLU3DaFBrR5dS9ZNAYZWn962UeKwv0pAbYUUKSMYdMUDeG7Yq2KEnotJD3xCWu3Y9uVQ==}
 
   '@tanstack/history@1.139.0':
     resolution: {integrity: sha512-l6wcxwDBeh/7Dhles23U1O8lp9kNJmAb2yNjekR6olZwCRNAVA8TCXlVCrueELyFlYZqvQkh0ofxnzG62A1Kkg==}
@@ -10054,6 +10064,11 @@ packages:
 
   '@tanstack/react-db@0.1.85':
     resolution: {integrity: sha512-OaZCTiCxAag8opGF0As8iRSrbFfGg/ggLWuXYdvMufoNHnDYsc/n2sULgGhFT1U1/1Q4zbkayz445NlDhC/5vg==}
+    peerDependencies:
+      react: '>=16.8.0'
+
+  '@tanstack/react-db@0.4.1':
+    resolution: {integrity: sha512-mA/a3TAufm0/AZUHmfyKKYfJnEH0XEzJ1Cymt5ZOLqR90MzzDK9KyaDh/JScYHYEipoRkKeRcmedAnHksP6yrg==}
     peerDependencies:
       react: '>=16.8.0'
 
@@ -25134,37 +25149,37 @@ snapshots:
       - msw
       - vite
 
-  '@durable-streams/server@0.3.7(@tanstack/db@0.6.7(typescript@5.8.3))':
+  '@durable-streams/server@0.3.7(@tanstack/db@0.9.2(typescript@5.8.3))':
     dependencies:
       '@durable-streams/client': 0.2.6
-      '@durable-streams/state': 0.3.1(@tanstack/db@0.6.7(typescript@5.8.3))
+      '@durable-streams/state': 0.3.1(@tanstack/db@0.9.2(typescript@5.8.3))
       '@neophi/sieve-cache': 1.5.0
       lmdb: 3.5.4
     transitivePeerDependencies:
       - '@tanstack/db'
 
-  '@durable-streams/server@0.3.7(@tanstack/db@0.6.7(typescript@5.9.3))':
+  '@durable-streams/server@0.3.7(@tanstack/db@0.9.2(typescript@5.9.3))':
     dependencies:
       '@durable-streams/client': 0.2.6
-      '@durable-streams/state': 0.3.1(@tanstack/db@0.6.7(typescript@5.9.3))
+      '@durable-streams/state': 0.3.1(@tanstack/db@0.9.2(typescript@5.9.3))
       '@neophi/sieve-cache': 1.5.0
       lmdb: 3.5.4
     transitivePeerDependencies:
       - '@tanstack/db'
 
-  '@durable-streams/state@0.3.1(@tanstack/db@0.6.7(typescript@5.8.3))':
+  '@durable-streams/state@0.3.1(@tanstack/db@0.9.2(typescript@5.8.3))':
     dependencies:
       '@durable-streams/client': 0.2.6
       '@standard-schema/spec': 1.1.0
     optionalDependencies:
-      '@tanstack/db': 0.6.7(typescript@5.8.3)
+      '@tanstack/db': 0.9.2(typescript@5.8.3)
 
-  '@durable-streams/state@0.3.1(@tanstack/db@0.6.7(typescript@5.9.3))':
+  '@durable-streams/state@0.3.1(@tanstack/db@0.9.2(typescript@5.9.3))':
     dependencies:
       '@durable-streams/client': 0.2.6
       '@standard-schema/spec': 1.1.0
     optionalDependencies:
-      '@tanstack/db': 0.6.7(typescript@5.9.3)
+      '@tanstack/db': 0.9.2(typescript@5.9.3)
 
   '@earendil-works/chord@0.85.1':
     dependencies:
@@ -25301,7 +25316,7 @@ snapshots:
     optionalDependencies:
       '@rollup/rollup-darwin-arm64': 4.46.1
 
-  '@electric-sql/client@1.5.20':
+  '@electric-sql/client@1.5.28':
     dependencies:
       '@microsoft/fetch-event-source': 2.0.1(patch_hash=46f4e76dd960e002a542732bb4323817a24fce1673cb71e2f458fe09776fa188)
     optionalDependencies:
@@ -30917,13 +30932,13 @@ snapshots:
       sorted-btree: 1.8.1
       typescript: 5.7.2
 
-  '@tanstack/db-ivm@0.1.18(typescript@5.8.3)':
+  '@tanstack/db-ivm@0.1.22(typescript@5.8.3)':
     dependencies:
       fractional-indexing: 3.2.0
       sorted-btree: 1.8.1
       typescript: 5.8.3
 
-  '@tanstack/db-ivm@0.1.18(typescript@5.9.3)':
+  '@tanstack/db-ivm@0.1.22(typescript@5.9.3)':
     dependencies:
       fractional-indexing: 3.2.0
       sorted-btree: 1.8.1
@@ -30955,17 +30970,17 @@ snapshots:
       '@tanstack/pacer-lite': 0.2.1
       typescript: 5.7.2
 
-  '@tanstack/db@0.6.7(typescript@5.8.3)':
+  '@tanstack/db@0.9.2(typescript@5.8.3)':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      '@tanstack/db-ivm': 0.1.18(typescript@5.8.3)
+      '@tanstack/db-ivm': 0.1.22(typescript@5.8.3)
       '@tanstack/pacer-lite': 0.2.1
       typescript: 5.8.3
 
-  '@tanstack/db@0.6.7(typescript@5.9.3)':
+  '@tanstack/db@0.9.2(typescript@5.9.3)':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      '@tanstack/db-ivm': 0.1.18(typescript@5.9.3)
+      '@tanstack/db-ivm': 0.1.22(typescript@5.9.3)
       '@tanstack/pacer-lite': 0.2.1
       typescript: 5.9.3
 
@@ -31036,12 +31051,11 @@ snapshots:
       - supports-color
       - typescript
 
-  '@tanstack/electric-db-collection@0.3.5(typescript@5.9.3)':
+  '@tanstack/electric-db-collection@0.4.10(typescript@5.9.3)':
     dependencies:
-      '@electric-sql/client': 1.5.20
+      '@electric-sql/client': 1.5.28
       '@standard-schema/spec': 1.1.0
-      '@tanstack/db': 0.6.7(typescript@5.9.3)
-      '@tanstack/store': 0.9.3
+      '@tanstack/db': 0.9.2(typescript@5.9.3)
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
@@ -31078,14 +31092,6 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@tanstack/react-db@0.1.85(react@19.1.0)(typescript@5.9.3)':
-    dependencies:
-      '@tanstack/db': 0.6.7(typescript@5.9.3)
-      react: 19.1.0
-      use-sync-external-store: 1.6.0(react@19.1.0)
-    transitivePeerDependencies:
-      - typescript
-
   '@tanstack/react-db@0.1.85(react@19.2.0)(typescript@5.7.2)':
     dependencies:
       '@tanstack/db': 0.6.7(typescript@5.7.2)
@@ -31094,17 +31100,25 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@tanstack/react-db@0.1.85(react@19.2.0)(typescript@5.9.3)':
+  '@tanstack/react-db@0.4.1(react@19.1.0)(typescript@5.9.3)':
     dependencies:
-      '@tanstack/db': 0.6.7(typescript@5.9.3)
+      '@tanstack/db': 0.9.2(typescript@5.9.3)
+      react: 19.1.0
+      use-sync-external-store: 1.6.0(react@19.1.0)
+    transitivePeerDependencies:
+      - typescript
+
+  '@tanstack/react-db@0.4.1(react@19.2.0)(typescript@5.9.3)':
+    dependencies:
+      '@tanstack/db': 0.9.2(typescript@5.9.3)
       react: 19.2.0
       use-sync-external-store: 1.6.0(react@19.2.0)
     transitivePeerDependencies:
       - typescript
 
-  '@tanstack/react-db@0.1.85(react@19.2.5)(typescript@5.8.3)':
+  '@tanstack/react-db@0.4.1(react@19.2.5)(typescript@5.8.3)':
     dependencies:
-      '@tanstack/db': 0.6.7(typescript@5.8.3)
+      '@tanstack/db': 0.9.2(typescript@5.8.3)
       react: 19.2.5
       use-sync-external-store: 1.6.0(react@19.2.5)
     transitivePeerDependencies:
@@ -33039,7 +33053,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.1.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.5(@opentelemetry/api@1.9.1)(@types/node@22.19.17)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@7.3.2(@types/node@22.19.17)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.20.3)(yaml@2.9.0))
+      vitest: 4.1.5(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@7.1.7(@types/node@25.9.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.20.3)(yaml@2.9.0))
 
   '@vitest/expect@3.2.4':
     dependencies:
