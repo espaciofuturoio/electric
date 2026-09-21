@@ -1,5 +1,26 @@
 # @electric-ax/agents-runtime
 
+## 0.6.4
+
+### Patch Changes
+
+- b149327: Bump `@earendil-works/pi-ai` and `@earendil-works/pi-agent-core` to `^0.85.1` (catalogs regenerated from models.dev: Sonnet 5, Fable 5, GPT-5.6, Kimi K3 across providers; provider-verified reasoning levels). `resolvePiModel` follows `getModel`'s narrower `BuiltinProvider` typing.
+- cbdb4f1: Raise the TanStack DB stack to the current line: `@tanstack/db` `^0.6.6` → `^0.9.2` (pulling
+  `@tanstack/db-ivm` 0.1.18 → 0.1.22), `@tanstack/react-db` `^0.1.85` → `^0.4.1` and
+  `@tanstack/electric-db-collection` `^0.3.5` → `^0.4.10`. `react-db` 0.4.1 and
+  `electric-db-collection` 0.4.10 both hard-pin `@tanstack/db@0.9.2`, so a consumer that installs
+  either alongside the runtime now resolves a single `@tanstack/db` copy instead of two.
+
+  `agents-runtime`'s optional `@tanstack/react-db` peer moves to `>=0.4.0` for the same reason: the
+  old `>=0.1.78` let a consumer satisfy the peer with a 0.1.x `react-db` that pins `db@0.6.x`, which
+  is a second copy of the query engine in the same bundle.
+
+  No source change was required. The `useLiveQuery(query, deps)` dependency-array form that all 58
+  call sites in this repo use is deprecated in `react-db` 0.3.0 but still drives query identity; it
+  only adds a once-per-callsite `console.warn` outside production.
+
+- 3e690ce: Update the agents runtime to the renamed Earendil Works pi packages and latest OpenAI/Codex model catalog. Preserve custom provider id compatibility, move built-in Codex defaults to GPT-5.6 models, and remove deprecated direct pi-agent-core dependencies from agents examples.
+
 ## 0.6.3
 
 ### Patch Changes
