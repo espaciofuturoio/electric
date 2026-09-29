@@ -33,6 +33,7 @@ const { mockState } = vi.hoisted(() => ({
     appends: [] as string[],
     appendError: null as Error | null,
     streams: [] as Array<{ shapeHandle?: string; lastOffset?: string }>,
+    producers: [] as Array<{ producerId: string; opts?: unknown }>,
   },
 }))
 
@@ -62,6 +63,9 @@ vi.mock(`@durable-streams/client`, () => ({
     constructor(readonly options: unknown) {}
   },
   IdempotentProducer: class MockIdempotentProducer {
+    constructor(_stream: unknown, producerId: string, opts?: unknown) {
+      mockState.producers.push({ producerId, opts })
+    }
     async append(payload: string): Promise<void> {
       if (mockState.appendError) throw mockState.appendError
       mockState.appends.push(payload)
@@ -79,6 +83,7 @@ beforeEach(() => {
   mockState.appends = []
   mockState.appendError = null
   mockState.streams = []
+  mockState.producers = []
   vi.stubGlobal(
     `fetch`,
     vi.fn(
@@ -516,6 +521,34 @@ describe(`PgSyncBridgeManager`, () => {
       log: `changes_only`,
     })
     expect(mockState.constructedOptions[1]).not.toHaveProperty(`handle`)
+  })
+
+  it(`starts each bridge process in a new producer epoch`, async () => {
+    // The producer id survives a coordinator restart and so does the server's
+    // (epoch, seq) state: a restarted bridge at epoch 0 would count seq from 0
+    // and see its first appends dropped as duplicates.
+    const start = async () => {
+      const manager = new PgSyncBridgeManager({
+        baseUrl: `http://durable`,
+        ensure: vi.fn(async () => undefined),
+      } as any)
+      await manager.register({ url: SHAPE_URL, table: `todos` })
+    }
+    vi.useFakeTimers({ now: new Date(`2026-09-29T14:00:00Z`) })
+    try {
+      await start()
+      vi.advanceTimersByTime(5_000)
+      await start()
+    } finally {
+      vi.useRealTimers()
+    }
+
+    const [before, after] = mockState.producers as Array<{
+      producerId: string
+      opts?: { epoch?: number }
+    }>
+    expect(after!.producerId).toBe(before!.producerId)
+    expect(after!.opts?.epoch).toBeGreaterThan(before!.opts?.epoch ?? 0)
   })
 
   it(`restarts from now on must-refetch`, async () => {

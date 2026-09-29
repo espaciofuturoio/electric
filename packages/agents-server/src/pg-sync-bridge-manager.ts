@@ -304,7 +304,16 @@ class PgSyncBridge {
           url: `${this.streamClient.baseUrl}${this.streamUrl}`,
           contentType: `application/json`,
         }),
-        `pg-sync-bridge-${this.sourceRef}`
+        `pg-sync-bridge-${this.sourceRef}`,
+        {
+          // The producer id is stable across coordinator restarts and the
+          // durable-streams server keeps its (epoch, seq) state. With the
+          // default epoch 0 a restarted bridge counts seq from 0 again and the
+          // server answers its first appends as duplicates, dropping them.
+          // A new epoch per start begins a new producer session instead.
+          epoch: Date.now(),
+          autoClaim: true,
+        }
       )
     }
     if (this.initialCursor) {
