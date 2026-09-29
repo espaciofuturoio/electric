@@ -112,6 +112,18 @@ function readOptionalPort(
   return port
 }
 
+/** A connection URL for logs: the password is replaced, everything else kept. */
+export function redactUrlPassword(url: string): string {
+  try {
+    const parsed = new URL(url)
+    if (!parsed.password) return url
+    parsed.password = `***`
+    return parsed.toString()
+  } catch {
+    return url.replace(/(\/\/[^:/@]+:)[^@]*@/, `$1***@`)
+  }
+}
+
 export function resolveElectricAgentsEntrypointOptions(
   env: EnvSource = process.env,
   cwd = process.cwd()
@@ -258,7 +270,7 @@ export async function main(): Promise<void> {
     console.log(
       `Durable Streams: ${started.options.durableStreamsUrl ?? `(embedded DurableStreamTestServer)`}`
     )
-    console.log(`Postgres: ${started.options.postgresUrl}`)
+    console.log(`Postgres: ${redactUrlPassword(started.options.postgresUrl)}`)
     if (started.options.electricUrl) {
       console.log(`Electric: ${started.options.electricUrl}`)
     }
