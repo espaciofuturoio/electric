@@ -1868,7 +1868,6 @@ describe(`processWake`, () => {
     expect(mockConstructedProducers).toContainEqual({
       producerId: `entity-http://localhost:3000/test-agent/agent-1`,
       opts: expect.objectContaining({
-        epoch: 1,
         autoClaim: true,
       }),
     })
@@ -1887,10 +1886,34 @@ describe(`processWake`, () => {
     expect(mockConstructedProducers).toContainEqual({
       producerId: `shared-state-http://localhost:3000/test-agent/agent-1-board-1`,
       opts: expect.objectContaining({
-        epoch: 1,
         autoClaim: true,
       }),
     })
+  })
+
+  it(`never reuses a producer epoch when the coordinator restarts and the wake epoch repeats`, async () => {
+    // The wake epoch is the webhook generation: it restarts at 1 with the coordinator, while the stream server
+    // keeps each producer's (epoch, seq). Writing at a repeated epoch counts seq from 0 again and the server
+    // answers `duplicate`, dropping the writes. Two wakes with the same epoch stand for "before" and "after".
+    defineEntity(`test-agent`, {
+      handler: async (ctx) => {
+        ctx.mkdb(`board-1`, sharedFindingsSchema)
+        await ctx.observe(db(`board-1`, sharedFindingsSchema))
+      },
+    })
+
+    await processWake(makeNotification(), BASE_CONFIG)
+    await processWake(makeNotification(), BASE_CONFIG)
+
+    const epochsOf = (prefix: string) =>
+      mockConstructedProducers
+        .filter((p) => p.producerId.startsWith(prefix))
+        .map((p) => p.opts?.epoch as number)
+    for (const prefix of [`entity-`, `shared-state-`]) {
+      const [before, after] = epochsOf(prefix)
+      expect(before).toBeGreaterThan(1)
+      expect(after).toBeGreaterThan(before!)
+    }
   })
 
   it(`returns persisted manifest rows when manifest is non-empty`, async () => {
