@@ -2,6 +2,7 @@ import { DurableStream, IdempotentProducer } from '@durable-streams/client'
 import { createStreamDB, queryOnce } from '@durable-streams/state/db'
 import { getEntityType } from './define-entity'
 import { createEntityStreamDB } from './entity-stream-db'
+import { nextProducerEpoch } from './producer-epoch'
 import { entityStateSchema, isManagementEvent } from './entity-schema'
 import { normalizeObservationSchema } from './observation-schema'
 import { createWakeSession } from './wake-session'
@@ -533,8 +534,9 @@ export async function processWake(
   })
 
   // Create producer BEFORE the StreamDB so state actions can write through it.
+  // Not the wake epoch: that restarts at 1 with the coordinator (see producer-epoch.ts).
   const producer = new IdempotentProducer(stream, `entity-${entityUrl}`, {
-    epoch,
+    epoch: nextProducerEpoch(),
     autoClaim: true,
     fetch: (input, init) => {
       const headers = new Headers(init?.headers)
@@ -1566,7 +1568,7 @@ export async function processWake(
           sharedStream,
           `shared-state-${entityUrl}-${ssId}`,
           {
-            epoch,
+            epoch: nextProducerEpoch(),
             autoClaim: true,
             onError: (error) => {
               failBackgroundWake(error, `WRITE_FAILED`)
