@@ -90,11 +90,16 @@ async function handleStreamAppend(
   const path = new URL(request.url).pathname
   const { manager } = runtime
   const entity = await manager.registry.getEntityByStream(path)
-  const isSharedState = path.startsWith(`/_electric/shared-state/`)
+  // Non-entity streams that entities observe with a wake: shared state, and
+  // the `webhook()` source streams (`/_webhooks/<endpoint>[/<bucket>]`), which
+  // a standalone coordinator has no other ingest for.
+  const isObservedSourceStream =
+    path.startsWith(`/_electric/shared-state/`) ||
+    path.startsWith(`/_webhooks/`)
   if (!entity && manager.isAttachmentStreamPath(path)) {
     return apiError(401, ErrCodeUnauthorized, `Invalid write token`)
   }
-  if (!entity && !isSharedState) {
+  if (!entity && !isObservedSourceStream) {
     return undefined
   }
 
