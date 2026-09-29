@@ -28,10 +28,17 @@ export type WebhookSignatureVerificationResult =
 interface CachedJwks {
   jwks: WebhookJwks
   expiresAt: number
+  fetchedAt: number
 }
 
 const DEFAULT_TOLERANCE_SECONDS = 300
 const DEFAULT_CACHE_TTL_MS = 300_000
+/**
+ * An unknown `kid` refetches a cached JWKS at most this often: a server that
+ * restarts with a new signing key is trusted on its first signed request,
+ * while forged kids cannot turn every request into a JWKS fetch.
+ */
+const UNKNOWN_KID_REFRESH_INTERVAL_MS = 10_000
 const encoder = new TextEncoder()
 const jwksCache = new Map<string, CachedJwks>()
 
@@ -55,9 +62,19 @@ export async function verifyWebhookSignature(
     return { ok: false, status: 401, error: `Webhook signature expired` }
   }
 
-  let jwks: WebhookJwks
+  let jwk: WebhookPublicJwk | undefined
   try {
-    jwks = await fetchWebhookJwks(config)
+    jwk = (await fetchWebhookJwks(config)).keys.find(
+      (key) => key.kid === parsed.kid
+    )
+    // The coordinator generates a new signing key on every boot unless one is
+    // configured. Without this refetch every wake it signs after a restart is
+    // rejected until the cached JWKS expires (up to five minutes).
+    if (!jwk && canRefreshForUnknownKid(config)) {
+      jwk = (await fetchWebhookJwks(config, true)).keys.find(
+        (key) => key.kid === parsed.kid
+      )
+    }
   } catch (err) {
     return {
       ok: false,
@@ -66,7 +83,6 @@ export async function verifyWebhookSignature(
     }
   }
 
-  const jwk = jwks.keys.find((key) => key.kid === parsed.kid)
   if (!jwk) {
     return { ok: false, status: 401, error: `Unknown webhook signing key` }
   }
@@ -121,12 +137,22 @@ function parseSignatureHeader(header: string): {
   }
 }
 
-async function fetchWebhookJwks(
+function canRefreshForUnknownKid(
   config: WebhookSignatureVerifierConfig
+): boolean {
+  const cached = jwksCache.get(config.jwksUrl)
+  return (
+    !cached || Date.now() - cached.fetchedAt >= UNKNOWN_KID_REFRESH_INTERVAL_MS
+  )
+}
+
+async function fetchWebhookJwks(
+  config: WebhookSignatureVerifierConfig,
+  force = false
 ): Promise<WebhookJwks> {
   const now = Date.now()
   const cached = jwksCache.get(config.jwksUrl)
-  if (cached && cached.expiresAt > now) return cached.jwks
+  if (!force && cached && cached.expiresAt > now) return cached.jwks
 
   const fetchClient = config.fetchClient ?? fetch
   const response = await fetchClient(config.jwksUrl, {
@@ -149,6 +175,7 @@ async function fetchWebhookJwks(
   jwksCache.set(config.jwksUrl, {
     jwks,
     expiresAt: now + cacheTtlMs(response, config.cacheTtlMs),
+    fetchedAt: now,
   })
   return jwks
 }
