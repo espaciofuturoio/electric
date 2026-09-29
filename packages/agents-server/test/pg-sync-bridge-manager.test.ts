@@ -414,6 +414,8 @@ describe(`PgSyncBridgeManager`, () => {
     expect(mockState.constructedOptions[0]).toMatchObject({
       offset: `12_0`,
       handle: `handle-1`,
+      // The stored handle names a `changes_only` shape; `full` would be another shape (409 → must-refetch → gap lost).
+      log: `changes_only`,
     })
   })
 
@@ -624,6 +626,7 @@ describe(`external review red tests`, () => {
 
     expect(mockState.constructedOptions.at(-1)).toMatchObject({
       offset: `1_0`,
+      log: `changes_only`,
     })
   })
 

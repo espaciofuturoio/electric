@@ -50,6 +50,7 @@ export class PgSyncSourceValidationError extends Error {
 const DEFAULT_RETRY_INITIAL_DELAY_MS = 1_000
 const DEFAULT_RETRY_MAX_DELAY_MS = 30_000
 const DEFAULT_PROBE_TIMEOUT_MS = 10_000
+const PG_SYNC_LOG_MODE: LogMode = `changes_only`
 
 type PgSyncChangeMessage = {
   headers: Record<string, unknown> & {
@@ -337,8 +338,7 @@ class PgSyncBridge {
   private startStream(
     offset: Offset,
     handle?: string,
-    skipChangesUntilUpToDate = false,
-    log: LogMode = offset === `now` ? `changes_only` : `full`
+    skipChangesUntilUpToDate = false
   ): void {
     this.unsubscribe?.()
     this.abortController?.abort()
@@ -349,7 +349,10 @@ class PgSyncBridge {
         url: this.resolvedSource.url,
         params: buildElectricShapeParams(this.options) as never,
         offset,
-        log,
+        // Every shape this bridge creates starts at `now`, which Electric only serves as `changes_only`, and a
+        // persisted handle names that shape. Resuming with `full` asks for a different shape: Electric answers 409,
+        // the client ends in `must-refetch`, and the bridge restarts at `now`, losing every row in the gap.
+        log: PG_SYNC_LOG_MODE,
         ...(handle ? { handle } : {}),
         signal: this.abortController.signal,
       })
