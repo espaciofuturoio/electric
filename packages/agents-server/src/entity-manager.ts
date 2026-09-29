@@ -369,6 +369,13 @@ function withOptionalTxid<T>(
  * lifecycle state are persisted directly in Postgres. Durable streams remain
  * the append-only transport for inbox/state events.
  */
+/**
+ * Makes sure an entity's main stream is linked to its dispatch subscription.
+ * The durable-streams server keeps subscriptions in memory, so after a
+ * restart an entity is dispatched again only once something re-links it.
+ */
+export type DispatchLinker = (entity: ElectricAgentsEntity) => Promise<void>
+
 export class EntityManager {
   readonly registry: PostgresRegistry
   private readonly tenantId: string
@@ -377,6 +384,7 @@ export class EntityManager {
   private scheduler: SchedulerClient | null = null
   private entityBridgeManager: EntityBridgeCoordinator | null = null
   private writeTokenValidator: WriteTokenValidator | null = null
+  private dispatchLinker: DispatchLinker | null = null
   readonly wakeRegistry: WakeRegistry
   private forkWorkLockedEntities = new Map<string, number>()
   private forkWriteLockedEntities = new Map<string, number>()
@@ -395,6 +403,7 @@ export class EntityManager {
     scheduler?: SchedulerClient
     entityBridgeManager?: EntityBridgeCoordinator
     writeTokenValidator?: WriteTokenValidator
+    dispatchLinker?: DispatchLinker
     spawnConcurrency?: number
     stopWakeRegistryOnShutdown?: boolean
   }) {
@@ -406,6 +415,7 @@ export class EntityManager {
     this.scheduler = opts.scheduler ?? null
     this.entityBridgeManager = opts.entityBridgeManager ?? null
     this.writeTokenValidator = opts.writeTokenValidator ?? null
+    this.dispatchLinker = opts.dispatchLinker ?? null
     this.stopWakeRegistryOnShutdown = opts.stopWakeRegistryOnShutdown ?? true
 
     const spawnConcurrency =
@@ -423,6 +433,24 @@ export class EntityManager {
     this.wakeRegistry.setDebounceCallback((result) => {
       void this.deliverWakeResult(result)
     }, this.tenantId)
+  }
+
+  /**
+   * Link `entity` to its dispatch subscription before the coordinator itself
+   * appends work for it (a wake, a scheduled send). The HTTP routes link on
+   * spawn and send; without this, work appended by the coordinator after a
+   * restart lands on a stream no subscription watches and never wakes it.
+   */
+  async ensureDispatchLinked(entity: ElectricAgentsEntity): Promise<void> {
+    if (!this.dispatchLinker || entity.status === `stopped`) return
+    try {
+      await this.dispatchLinker(entity)
+    } catch (err) {
+      serverLog.warn(
+        `[agent-server] failed to link dispatch subscription for ${entity.url}:`,
+        err
+      )
+    }
   }
 
   async rebuildWakeRegistry(
@@ -3335,6 +3363,7 @@ export class EntityManager {
           : Promise.resolve(null),
       ])
       if (!subscriber) return
+      await this.ensureDispatchLinked(subscriber)
       const wakeMessage = await this.buildWakeMessage(
         subscriber,
         result,
