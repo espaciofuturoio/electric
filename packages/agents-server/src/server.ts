@@ -8,6 +8,7 @@ import {
 } from '@electric-ax/agents-runtime'
 import { createDb, runMigrations } from './db/index.js'
 import { ossServerRouter } from './routing/oss-server-router.js'
+import { linkEntityDispatchSubscription } from './routing/dispatch-policy.js'
 import { startStandaloneAgentsRuntime } from './standalone-runtime.js'
 import { StreamClient } from './stream-client.js'
 import { DEFAULT_TENANT_ID } from './tenant.js'
@@ -237,6 +238,11 @@ export class ElectricAgentsServer {
       this.pgDb = db
       this.pgClient = client
 
+      let markListening!: () => void
+      const listening = new Promise<void>((resolve) => {
+        markListening = resolve
+      })
+
       this.standaloneRuntime = await startStandaloneAgentsRuntime({
         service: this.tenantId,
         db,
@@ -245,6 +251,15 @@ export class ElectricAgentsServer {
         electricUrl: this.options.electricUrl,
         electricSecret: this.options.electricSecret,
         pgSync: this.options.pgSync,
+        dispatchLinker: async (entity) => {
+          // Work the runtime appends while booting (pg-sync bridges resume
+          // before listen) links once the public URL is known.
+          await listening
+          await linkEntityDispatchSubscription(
+            this.buildContext(getDevPrincipal()),
+            entity
+          )
+        },
       })
       this.electricAgentsManager = this.standaloneRuntime.manager
       this.entityBridgeManager = this.standaloneRuntime.entityBridgeManager
@@ -258,6 +273,7 @@ export class ElectricAgentsServer {
 
       const host = this.options.host ?? `127.0.0.1`
       await this.listen(server, host)
+      markListening()
 
       if (this.options.mockStreamFn) {
         this.mockAgentBootstrap = createMockAgentBootstrap({
@@ -425,6 +441,21 @@ export class ElectricAgentsServer {
         `Missing Electric-Principal`,
         401
       )
+    }
+
+    return this.buildContext(principal)
+  }
+
+  private buildContext(principal: Principal): OssServerContext {
+    if (
+      !this.standaloneRuntime ||
+      !this.electricAgentsManager ||
+      !this.entityBridgeManager ||
+      !this.pgDb ||
+      !this.streamsAgent ||
+      !this.options.durableStreamsUrl
+    ) {
+      throw new Error(`agents-server runtime is not started`)
     }
 
     return {

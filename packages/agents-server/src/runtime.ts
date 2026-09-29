@@ -4,6 +4,7 @@ import { consumerCallbacks, wakeRegistrations } from './db/schema.js'
 import { ClaimWriteTokenStore } from './claim-write-token-store.js'
 import { PostgresRegistry } from './entity-registry.js'
 import { EntityManager } from './entity-manager.js'
+import type { DispatchLinker } from './entity-manager.js'
 import {
   buildManifestWakeRegistration,
   extractManifestCronSpec,
@@ -49,6 +50,7 @@ export interface ElectricAgentsTenantRuntimeOptions {
   pgSync?: PgSyncBridgeManagerOptions
   claimWriteTokens?: ClaimWriteTokenStore
   stopWakeRegistryOnShutdown?: boolean
+  dispatchLinker?: DispatchLinker
 }
 
 export class ElectricAgentsTenantRuntime {
@@ -99,6 +101,7 @@ export class ElectricAgentsTenantRuntime {
           token
         ),
       stopWakeRegistryOnShutdown: options.stopWakeRegistryOnShutdown ?? false,
+      dispatchLinker: options.dispatchLinker,
     })
     this.pgSyncBridgeManager =
       options.pgSyncBridgeManager ??
@@ -331,6 +334,8 @@ export class ElectricAgentsTenantRuntime {
   ): Promise<void> {
     const producerId = payload.producerId ?? `scheduler-task-${taskId}`
     try {
+      const target = await this.manager.registry.getEntity(payload.entityUrl)
+      if (target) await this.manager.ensureDispatchLinked(target)
       await this.manager.send(
         payload.entityUrl,
         {

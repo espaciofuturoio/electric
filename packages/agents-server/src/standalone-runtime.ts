@@ -9,7 +9,7 @@ import { TagStreamOutboxDrainer } from './tag-stream-outbox-drainer.js'
 import { DEFAULT_TENANT_ID } from './tenant.js'
 import { WakeRegistry } from './wake-registry.js'
 import type { DrizzleDB, PgClient } from './db/index.js'
-import type { EntityManager } from './entity-manager.js'
+import type { DispatchLinker, EntityManager } from './entity-manager.js'
 import type { EntityBridgeCoordinator } from './entity-bridge-manager.js'
 import type {
   PgSyncBridgeCoordinator,
@@ -39,6 +39,7 @@ export interface StandaloneAgentsRuntimeOptions {
   entityBridgeManager?: EntityBridgeCoordinator
   pgSyncBridgeManager?: PgSyncBridgeCoordinator
   pgSync?: PgSyncBridgeManagerOptions
+  dispatchLinker?: DispatchLinker
 }
 
 export interface StartedStandaloneAgentsRuntime {
@@ -115,6 +116,7 @@ export async function startStandaloneAgentsRuntime(
     pgSyncBridgeManager: options.pgSyncBridgeManager,
     pgSync: options.pgSync,
     stopWakeRegistryOnShutdown: options.wakeRegistry ? false : true,
+    dispatchLinker: options.dispatchLinker,
   })
 
   const startWakeRegistry = options.startWakeRegistry ?? true
