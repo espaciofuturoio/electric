@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
+  redactUrlPassword,
   resolveElectricAgentsEntrypointOptions,
   runElectricAgentsEntrypoint,
 } from '../src/entrypoint-lib'
@@ -237,5 +238,19 @@ describe(`runElectricAgentsEntrypoint`, () => {
       port: 0,
       webhooks: true,
     })
+  })
+})
+
+describe(`redactUrlPassword`, () => {
+  it(`hides the password of a connection URL and keeps the rest`, () => {
+    expect(
+      redactUrlPassword(`postgres://agents:s3cr3t@postgres:5432/agents`)
+    ).toBe(`postgres://agents:***@postgres:5432/agents`)
+  })
+
+  it(`leaves a URL without a password unchanged`, () => {
+    expect(redactUrlPassword(`postgres://postgres:5432/agents`)).toBe(
+      `postgres://postgres:5432/agents`
+    )
   })
 })
