@@ -1,5 +1,11 @@
 # @electric-ax/agents-desktop
 
+## 0.6.2
+
+### Patch Changes
+
+- 3e690ce: Update the agents runtime to the renamed Earendil Works pi packages and latest OpenAI/Codex model catalog. Preserve custom provider id compatibility, move built-in Codex defaults to GPT-5.6 models, and remove deprecated direct pi-agent-core dependencies from agents examples.
+
 ## 0.6.1
 
 ### Patch Changes

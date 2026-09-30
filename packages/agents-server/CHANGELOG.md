@@ -1,5 +1,27 @@
 # @electric-ax/agents-server
 
+## 0.6.5
+
+### Patch Changes
+
+- 6eb5376: pgSync bridges no longer lose rows across a coordinator restart:
+  - they resume their persisted cursor with `log=changes_only`, the mode their shape was created with (resuming with `full` made Electric answer 409 and the bridge restart at `now`, losing the gap);
+  - each bridge start writes in a new producer epoch (the producer id and the server's `(epoch, seq)` state survive a restart, so a restarted bridge at epoch 0 had its first appends dropped as duplicates).
+
+- b149327: Bump `@earendil-works/pi-ai` and `@earendil-works/pi-agent-core` to `^0.85.1` (catalogs regenerated from models.dev: Sonnet 5, Fable 5, GPT-5.6, Kimi K3 across providers; provider-verified reasoning levels). `resolvePiModel` follows `getModel`'s narrower `BuiltinProvider` typing.
+- 29e068b: The startup banner prints the Postgres URL with its password redacted (it was printed verbatim into the container log).
+- 57e2aa2: Wakes the coordinator appends itself (pgSync changes, observed entities, cron ticks, runFinished, scheduled sends) re-link the subscriber's dispatch subscription first. The durable-streams server keeps subscriptions in memory and only the spawn/send/fork routes re-linked them, so after a coordinator restart an entity woken only by such wakes was never dispatched again until an inbox message arrived.
+- d3cd4eb: The coordinator records the offset each runtime acks on a stream (`stream_acks`, migration 0017) and a wake hands the runtime the older of that and Durable Streams' own ack. Durable Streams keeps subscriptions in memory and links a stream again at its current tail after a restart, so messages appended just before a coordinator crash were acked without any handler seeing them.
+- 3e690ce: Update the agents runtime to the renamed Earendil Works pi packages and latest OpenAI/Codex model catalog. Preserve custom provider id compatibility, move built-in Codex defaults to GPT-5.6 models, and remove deprecated direct pi-agent-core dependencies from agents examples.
+- c573ace: Fix `runFinished` child wakes being delivered only for the last child spawned. The wake registry read the deleted row id from `old_value` on shape delete messages, but Electric's `replica: full` deletes carry the row in `value`, so every delete reset the whole in-memory registration cache (and the shape log replayed those deletes on restart). Read the id from `value` first and only fall back to a full reset when no id is available.
+- e0f7c45: Appends to a `webhook()` source stream (`/_webhooks/<endpoint>[/<bucket>]`) evaluate wakes, as shared-state appends do. A standalone coordinator has no webhook ingest, and these appends were forwarded without wake evaluation, so an entity observing `webhook()` was never woken.
+- Updated dependencies [b149327]
+- Updated dependencies [dca3239]
+- Updated dependencies [17ec5b2]
+- Updated dependencies [cbdb4f1]
+- Updated dependencies [3e690ce]
+  - @electric-ax/agents-runtime@0.6.4
+
 ## 0.6.4
 
 ### Patch Changes
