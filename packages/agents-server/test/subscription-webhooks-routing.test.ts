@@ -293,6 +293,113 @@ describe(`subscription webhooks for Durable Streams subscriptions`, () => {
     }
   })
 
+  it(`after a coordinator restart hands over from the last recorded ack, not the re-link's tail`, async () => {
+    // Durable Streams keeps subscriptions in memory: after a restart it links the stream again with
+    // its tail as the ack, and the messages appended just before the crash were acked unseen (plan
+    // 013 WS-SHIP2: 2 of 200 in a kill -9 mid-burst). The coordinator's own record is older.
+    const recorded = `0000000000000000_0000000000000100`
+    const relinkTail = `0000000000000000_0000000000000300`
+    const tail = `0000000000000000_0000000000000400`
+    const select = selectDb([
+      {
+        webhookUrl: `http://runtime.local/_electric/builtin-agent-handler`,
+        ackedOffset: recorded,
+      },
+    ])
+    const insert = insertDb()
+    const fetchSpy = vi.spyOn(globalThis, `fetch`).mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), {
+        headers: { 'content-type': `application/json` },
+      })
+    )
+
+    try {
+      const response = await globalRouter.fetch(
+        request(`POST`, `/_electric/subscription-webhooks/horton-handler`, {
+          subscription_id: `horton-handler`,
+          wake_id: `wake-after-restart`,
+          generation: 1,
+          streams: [
+            {
+              path: `horton/demo/main`,
+              acked_offset: relinkTail,
+              tail_offset: tail,
+              has_pending: true,
+            },
+          ],
+          callback_url: `http://durable.local/v1/stream/tenant-a/__ds/subscriptions/horton-handler/callback`,
+          callback_token: `callback-token`,
+        }),
+        buildContext({
+          pgDb: { select: select.select, insert: insert.insert } as any,
+        })
+      )
+
+      expect(response.status).toBe(200)
+      const forwarded = requestBodyJson(fetchSpy.mock.calls[0]![1]!.body) as {
+        streams: Array<Record<string, string>>
+      }
+      expect(forwarded.streams).toEqual([
+        { path: `/horton/demo/main`, offset: tail, ackedOffset: recorded },
+      ])
+    } finally {
+      fetchSpy.mockRestore()
+    }
+  })
+
+  it(`records the acks of a wake callback so a restart cannot skip unseen messages`, async () => {
+    const select = selectDb([
+      {
+        callbackUrl: `http://durable.local/v1/stream/tenant-a/__ds/subscriptions/horton-handler/callback`,
+        primaryStream: `/horton/demo/main`,
+      },
+    ])
+    const insert = insertDb()
+    const fetchSpy = vi.spyOn(globalThis, `fetch`).mockResolvedValue(
+      new Response(JSON.stringify({ ok: true, next_wake: false }), {
+        headers: { 'content-type': `application/json` },
+      })
+    )
+
+    try {
+      const response = await globalRouter.fetch(
+        new Request(`http://agents.local/_electric/wake-callbacks/wake-1`, {
+          method: `POST`,
+          headers: {
+            'content-type': `application/json`,
+            authorization: `Bearer callback-token`,
+          },
+          body: JSON.stringify({
+            epoch: 7,
+            acks: [
+              {
+                path: `/horton/demo/main`,
+                offset: `0000000000000000_0000000000000300`,
+              },
+            ],
+            done: true,
+          }),
+        }),
+        buildContext({
+          pgDb: { select: select.select, insert: insert.insert } as any,
+        })
+      )
+
+      expect(response.status).toBe(200)
+      expect(insert.values).toHaveBeenCalledWith({
+        tenantId: `tenant-a`,
+        stream: `/horton/demo/main`,
+        ackedOffset: `0000000000000000_0000000000000300`,
+      })
+      // Forward only: the update is guarded by the stored offset being older.
+      expect(insert.onConflictDoUpdate.mock.calls[0]![0]).toHaveProperty(
+        `setWhere`
+      )
+    } finally {
+      fetchSpy.mockRestore()
+    }
+  })
+
   it(`rejects subscription-webhook requests with invalid upstream DS signatures`, async () => {
     const select = selectDb([
       { webhookUrl: `http://runtime.local/_electric/builtin-agent-handler` },

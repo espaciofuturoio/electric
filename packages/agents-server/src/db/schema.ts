@@ -557,6 +557,24 @@ export const subscriptionWebhooks = pgTable(
   (table) => [primaryKey({ columns: [table.tenantId, table.subscriptionId] })]
 )
 
+/**
+ * The last offset a runtime acked on a stream, kept by the coordinator (`stream-acks.ts`). Durable Streams holds its
+ * subscriptions in memory and links a stream again at its current tail after a restart, so this is what remembers
+ * which messages a handler has not seen yet.
+ */
+export const streamAcks = pgTable(
+  `stream_acks`,
+  {
+    tenantId: text(`tenant_id`).notNull().default(`default`),
+    stream: text(`stream`).notNull(),
+    ackedOffset: text(`acked_offset`).notNull(),
+    updatedAt: timestamp(`updated_at`, { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.tenantId, table.stream] })]
+)
+
 export const consumerCallbacks = pgTable(
   `consumer_callbacks`,
   {
