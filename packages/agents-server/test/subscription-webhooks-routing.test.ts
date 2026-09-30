@@ -281,6 +281,13 @@ describe(`subscription webhooks for Durable Streams subscriptions`, () => {
       expect(forwardedHeaders.get(`webhook-signature`)).toBe(
         `t=1,kid=agents,ed25519=runtime_signature`
       )
+      // The ack travels with the tail, so the runtime can hand over every unseen event.
+      const forwarded = (await new Response(
+        fetchSpy.mock.calls[1]![1]!.body
+      ).json()) as { streams: Array<Record<string, string>> }
+      expect(forwarded.streams).toEqual([
+        { path: `/horton/demo/main`, offset: `1`, ackedOffset: `0` },
+      ])
     } finally {
       fetchSpy.mockRestore()
     }

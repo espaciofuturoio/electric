@@ -2455,6 +2455,65 @@ describe(`processWake`, () => {
     warnMock.mockRestore()
   })
 
+  it(`passes every message after the acked offset when several arrived before the wake landed`, async () => {
+    // The coordinator forwards the stream's tail as `offset`. Messages sent while the entity
+    // server was unreachable (a deploy, a crash) all sit between the ack and the tail; only the
+    // last one reached the handler, the others were acked unseen (plan 013 WS-TIMER).
+    const seen: Array<Array<string>> = []
+
+    defineEntity(`test-agent`, {
+      handler: (ctx) => {
+        seen.push(
+          ctx.events
+            .filter((event) => event.type === `inbox`)
+            .map((event) => String(event.key))
+        )
+      },
+    })
+
+    mockDbOffset.value = `10_100`
+    mockStreamOffset.value = `13_0`
+    mockDbPreload.mockImplementationOnce(async () => {
+      mockEntityOnBatch.current?.({
+        items: [
+          ev(
+            `inbox`,
+            `m-0`,
+            `insert`,
+            { payload: `acked` },
+            { offset: `10_100` }
+          ),
+          ev(`inbox`, `m-1`, `insert`, { payload: `one` }, { offset: `11_0` }),
+          ev(`inbox`, `m-2`, `insert`, { payload: `two` }, { offset: `12_0` }),
+          ev(
+            `inbox`,
+            `m-3`,
+            `insert`,
+            { payload: `three` },
+            { offset: `13_0` }
+          ),
+        ],
+        offset: `13_0`,
+      })
+    })
+
+    await processWake(
+      makeNotification({
+        triggerEvent: `inbox`,
+        streams: [
+          {
+            path: `/streams/entity:agent-1`,
+            offset: `13_0`,
+            ackedOffset: `10_100`,
+          },
+        ],
+      }),
+      BASE_CONFIG
+    )
+
+    expect(seen.flat()).toEqual([`m-1`, `m-2`, `m-3`])
+  })
+
   it(`runs the handler with the new message when it arrives on live SSE during the 100ms wait`, async () => {
     const wakePayloads: Array<unknown> = []
 
