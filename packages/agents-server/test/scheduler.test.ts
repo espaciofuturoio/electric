@@ -172,6 +172,50 @@ describe(`Scheduler`, () => {
     ).toBe(false)
   })
 
+  it(`executes a claimed batch in fire_at, id order whatever order RETURNING gives`, async () => {
+    // `update … where id in (select … order by fire_at, id limit 50) returning …` does not keep the
+    // subquery's order: measured on 0.6.4-fork.29e068bf2, 200 sends due within 1 s ran with 1,477
+    // out-of-order pairs (up to 243 ms apart).
+    const row = (id: number, fireAt: string) => ({
+      id,
+      tenant_id: `default`,
+      kind: `delayed_send`,
+      payload: { entityUrl: `/chat/test`, payload: id },
+      fire_at: new Date(fireAt),
+      cron_expression: null,
+      cron_timezone: null,
+      cron_tick_number: null,
+      owner_entity_url: null,
+      manifest_key: null,
+    })
+    const mock = createMockPgClient({
+      responses: [
+        [
+          row(3, `2026-04-09T12:00:00.200Z`),
+          row(2, `2026-04-09T12:00:00.100Z`),
+          row(4, `2026-04-09T12:00:00.100Z`),
+          row(1, `2026-04-09T12:00:00.000Z`),
+        ],
+      ],
+    })
+    const executed: Array<unknown> = []
+    const scheduler = new Scheduler({
+      pgClient: mock.pgClient,
+      instanceId: `instance-1`,
+      executors: {
+        delayed_send: vi.fn(async (payload: { payload: unknown }) => {
+          executed.push(payload.payload)
+        }),
+        cron_tick: vi.fn(),
+      },
+    })
+    ;(scheduler as any).running = true
+
+    await (scheduler as any).fireReadyTasks()
+
+    expect(executed).toEqual([1, 2, 4, 3])
+  })
+
   it(`filters shared claims to registered tenant ids`, async () => {
     const mock = createMockPgClient({
       responses: [
