@@ -313,6 +313,7 @@ function newWebhookPayload(body: SubscriptionWebhookBody | undefined): {
   generation: number
   primaryStream: string
   tailOffset: string
+  ackedOffset: string | undefined
   callbackUrl: string
   callbackToken: string
 } | null {
@@ -332,6 +333,7 @@ function newWebhookPayload(body: SubscriptionWebhookBody | undefined): {
     | {
         path?: unknown
         tail_offset?: unknown
+        acked_offset?: unknown
         has_pending?: unknown
       }
     | undefined
@@ -342,6 +344,7 @@ function newWebhookPayload(body: SubscriptionWebhookBody | undefined): {
     | {
         path?: unknown
         tail_offset?: unknown
+        acked_offset?: unknown
       }
     | undefined
   if (
@@ -356,6 +359,10 @@ function newWebhookPayload(body: SubscriptionWebhookBody | undefined): {
     generation: body.generation,
     primaryStream: withLeadingSlash(selectedStream.path),
     tailOffset: selectedStream.tail_offset,
+    ackedOffset:
+      typeof selectedStream.acked_offset === `string`
+        ? selectedStream.acked_offset
+        : undefined,
     callbackUrl: body.callback_url,
     callbackToken: body.callback_token,
   }
@@ -614,8 +621,16 @@ async function subscriptionWebhook(
           enriched.epoch = newWebhook.generation
           enriched.wakeId = newWebhook.wakeId
           enriched.streamPath = primaryStream
+          // The ack too: the runtime then hands the handler every event after it, not only the
+          // tail (messages that queued while the entity server was unreachable).
           enriched.streams = [
-            { path: primaryStream, offset: newWebhook.tailOffset },
+            {
+              path: primaryStream,
+              offset: newWebhook.tailOffset,
+              ...(newWebhook.ackedOffset !== undefined && {
+                ackedOffset: newWebhook.ackedOffset,
+              }),
+            },
           ]
           enriched.claimToken = newWebhook.callbackToken
         }

@@ -479,9 +479,11 @@ export async function processWake(
   }
 
   const streamUrl = appendPathToUrl(baseUrl, streamPath)
-  const notificationOffset =
-    notification.streams.find((streamEntry) => streamEntry.path === streamPath)
-      ?.offset ?? `-1`
+  const notificationStream = notification.streams.find(
+    (streamEntry) => streamEntry.path === streamPath
+  )
+  const notificationOffset = notificationStream?.offset ?? `-1`
+  const notificationAckedOffset = notificationStream?.ackedOffset
   const io = createInFlightTracker()
   let serverHttpMs = 0
   let serverHttpCount = 0
@@ -1657,8 +1659,14 @@ export async function processWake(
         return compareOffsets(offset, offsetBound) > 0
       })
     }
+    // With the ack known, the wake covers every unseen event, not only those at the tail: messages
+    // that arrived while this entity server was unreachable would otherwise be acked unseen.
     const eventsAtOrAfterNotification =
-      filterEventsAtOrAboveOffset(notificationOffset)
+      notificationAckedOffset === undefined
+        ? filterEventsAtOrAboveOffset(notificationOffset)
+        : notificationAckedOffset === `-1`
+          ? [...catchUpEvents]
+          : filterEventsAfterOffset(catchUpEvents, notificationAckedOffset)
     const forkReconciliationOffset = latestForkReconciliationOffset(
       eventsAtOrAfterNotification
     )

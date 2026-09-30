@@ -704,7 +704,12 @@ export interface WebhookNotification {
   epoch: number
   wakeId: string
   streamPath: string
-  streams: Array<{ path: string; offset: string }>
+  /**
+   * `offset` is the stream's tail when the wake was delivered. `ackedOffset` (a coordinator that
+   * forwards it) is the last offset this consumer acked: every event after it is unseen, even when
+   * several arrived before the wake landed.
+   */
+  streams: Array<{ path: string; offset: string; ackedOffset?: string }>
   triggeredBy?: Array<string>
   callback: string
   claimToken: string
