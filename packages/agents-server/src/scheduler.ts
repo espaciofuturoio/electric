@@ -262,6 +262,18 @@ function normalizeTask(row: ScheduledTaskRow): {
   }
 }
 
+/**
+ * `update … where id in (select … order by fire_at, id limit 50) returning …` returns rows in the
+ * update's scan order, not the subquery's, so a claimed batch is re-sorted before it runs.
+ */
+function inFireOrder(
+  rows: Array<ScheduledTaskRow>
+): Array<ReturnType<typeof normalizeTask>> {
+  return rows
+    .map(normalizeTask)
+    .sort((a, b) => a.fireAt.getTime() - b.fireAt.getTime() || a.id - b.id)
+}
+
 export class Scheduler implements SchedulerClient {
   private readonly claimExpiryMs: number
   private readonly safetyPollMs: number
@@ -534,7 +546,7 @@ export class Scheduler implements SchedulerClient {
             , owner_entity_url, manifest_key
         `
 
-        return rows.map(normalizeTask)
+        return inFireOrder(rows)
       }
 
       const rows = await this.pgClient<Array<ScheduledTaskRow>>`
@@ -554,7 +566,7 @@ export class Scheduler implements SchedulerClient {
           , owner_entity_url, manifest_key
       `
 
-      return rows.map(normalizeTask)
+      return inFireOrder(rows)
     }
 
     const rows = await this.pgClient<Array<ScheduledTaskRow>>`
@@ -576,7 +588,7 @@ export class Scheduler implements SchedulerClient {
         , owner_entity_url, manifest_key
     `
 
-    return rows.map(normalizeTask)
+    return inFireOrder(rows)
   }
 
   private async executeTask(
