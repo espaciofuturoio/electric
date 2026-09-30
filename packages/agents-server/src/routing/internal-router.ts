@@ -24,6 +24,11 @@ import {
 import { ATTR, tracer } from '../tracing.js'
 import { decodeJsonObject } from '../utils/server-utils.js'
 import { serverLog } from '../utils/log.js'
+import {
+  olderOffset,
+  persistedAckedOffset,
+  recordStreamAcks,
+} from '../stream-acks.js'
 import { applyDurableStreamsBearer } from '../stream-client.js'
 import { getDefaultWebhookSigner } from '../webhook-signing.js'
 import { resolveDurableStreamsRoutingAdapter } from './durable-streams-routing-adapter.js'
@@ -572,6 +577,22 @@ async function subscriptionWebhook(
               })
           : undefined
 
+      // After a coordinator restart Durable Streams links the stream again at its tail; the ack the
+      // coordinator kept is older when messages landed just before the crash (stream-acks.ts).
+      const persistedAckPromise =
+        newWebhook?.ackedOffset !== undefined
+          ? persistedAckedOffset(ctx.pgDb, ctx.service, primaryStream).catch(
+              (err) => {
+                serverLog.warn(
+                  `[subscription-webhook] stream_acks read failed (non-fatal): ${
+                    err instanceof Error ? err.message : String(err)
+                  }`
+                )
+                return undefined
+              }
+            )
+          : undefined
+
       const [entity, enriched] = await Promise.all([
         entityPromise,
         enrichPromise,
@@ -617,6 +638,17 @@ async function subscriptionWebhook(
         )
         enriched.callback = callback
         if (newWebhook) {
+          let ackedOffset = newWebhook.ackedOffset
+          if (ackedOffset !== undefined) {
+            const persisted = await persistedAckPromise
+            const older = olderOffset(ackedOffset, persisted)
+            if (older !== ackedOffset) {
+              serverLog.info(
+                `[subscription-webhook] stream=${primaryStream} acked ${ackedOffset} by the link, ${older} by the last callback: handing over from ${older}`
+              )
+              ackedOffset = older
+            }
+          }
           enriched.consumerId = newWebhook.wakeId
           enriched.epoch = newWebhook.generation
           enriched.wakeId = newWebhook.wakeId
@@ -627,9 +659,7 @@ async function subscriptionWebhook(
             {
               path: primaryStream,
               offset: newWebhook.tailOffset,
-              ...(newWebhook.ackedOffset !== undefined && {
-                ackedOffset: newWebhook.ackedOffset,
-              }),
+              ...(ackedOffset !== undefined && { ackedOffset }),
             },
           ]
           enriched.claimToken = newWebhook.callbackToken
@@ -804,6 +834,33 @@ async function wakeCallback(
         responseBytes = new TextEncoder().encode(JSON.stringify(responseBody))
       }
     }
+  }
+
+  if (upstream.ok && Array.isArray(requestBody?.acks)) {
+    const acks = requestBody.acks.map((ack) => {
+      const input = ack as {
+        path?: unknown
+        stream?: unknown
+        offset?: unknown
+      }
+      const stream =
+        typeof input.stream === `string`
+          ? input.stream
+          : typeof input.path === `string`
+            ? input.path
+            : ``
+      return {
+        stream,
+        offset: typeof input.offset === `string` ? input.offset : ``,
+      }
+    })
+    await recordStreamAcks(ctx.pgDb, ctx.service, acks).catch((err) => {
+      serverLog.warn(
+        `[wake-callback] stream_acks write failed (non-fatal): ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      )
+    })
   }
 
   try {
