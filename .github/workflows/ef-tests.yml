@@ -99,9 +99,14 @@ jobs:
       - run: pnpm install --frozen-lockfile --filter "@electric-ax/agents-server..." --filter "@electric-ax/agents-runtime..." --filter "@electric-ax/agents-server-conformance-tests..."
       - name: Build the workspace packages the tests import
         run: pnpm --filter "@electric-ax/agents-server^..." --filter "@electric-ax/agents-runtime^..." build
-      - run: pnpm --filter @electric-ax/agents-runtime test
-      - run: pnpm --filter @electric-ax/agents-server test
-        if: ${{ !cancelled() }}
+      # Both suites always run; the verdict is the comparison with .github/ef/known-failures.txt (failures already on
+      # main when this CI started), so a NEW failure fails the job and a fixed one is announced.
+      - name: agents-runtime tests
+        run: pnpm --filter @electric-ax/agents-runtime exec vitest run --reporter=default --reporter=json --outputFile="$RUNNER_TEMP/agents-runtime.json" || true
+      - name: agents-server tests
+        run: pnpm --filter @electric-ax/agents-server exec vitest run --reporter=default --reporter=json --outputFile="$RUNNER_TEMP/agents-server.json" || true
+      - name: Verdict against the known failures
+        run: node .github/ef/known-failures.mjs agents-runtime="$RUNNER_TEMP/agents-runtime.json" agents-server="$RUNNER_TEMP/agents-server.json"
       - name: Backend logs on failure
         if: failure()
         run: docker logs electric 2>&1 | tail -80
