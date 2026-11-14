@@ -6,6 +6,11 @@ name: ef dependabot automerge
 
 on: pull_request
 
+# gh in a fork's runner may default to the PARENT repo (it tried to label a PR on neondatabase/electric, 2026-11-14):
+# every gh call here targets this repo.
+env:
+  GH_REPO: ${{ github.repository }}
+
 permissions:
   contents: write
   pull-requests: write

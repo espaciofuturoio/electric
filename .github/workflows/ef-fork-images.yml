@@ -24,6 +24,8 @@ permissions:
   packages: write
 
 env:
+  # gh in a fork's runner may default to the PARENT repo (2026-11-14): every gh call here targets this repo.
+  GH_REPO: ${{ github.repository }}
   COORDINATOR_IMAGE: ghcr.io/espaciofuturoio/electric-agents-server
   SYNC_IMAGE: ghcr.io/espaciofuturoio/electric-sync-service
 
