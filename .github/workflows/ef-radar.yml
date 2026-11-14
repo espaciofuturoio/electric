@@ -36,10 +36,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: ${{ steps.radar.outputs.branch }}
+          # Upstream commits touch .github/workflows, which GITHUB_TOKEN may not push: the branch goes up with the repo's
+          # write deploy key `ef-radar` (secret EF_RADAR_DEPLOY_KEY; rollback: delete the key in Settings → Deploy keys).
+          DEPLOY_KEY: ${{ secrets.EF_RADAR_DEPLOY_KEY }}
         run: |
           month="$(date -u +%Y-%m)"; report="$RUNNER_TEMP/radar.md"; pr=""
           if [ -n "$BRANCH" ]; then
-            git push -q -f origin "$BRANCH"
+            key="$RUNNER_TEMP/ef_radar_key"; printf '%s\n' "$DEPLOY_KEY" > "$key"; chmod 600 "$key"
+            GIT_SSH_COMMAND="ssh -i $key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" \
+              git push -q -f "git@github.com:${GITHUB_REPOSITORY}.git" "$BRANCH"
+            rm -f "$key"
             pr="$(gh pr list --head "$BRANCH" --json url -q '.[0].url')"
             [ -n "$pr" ] || pr="$(gh pr create --base main --head "$BRANCH" --label ef \
               --title "ef: upstream neondatabase/electric ($month)" --body-file "$report")"
