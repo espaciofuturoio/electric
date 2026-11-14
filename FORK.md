@@ -78,6 +78,9 @@ Bots open their PRs through `.github/ef/bot-pr.sh`: the branch is pushed with th
 push triggers nothing and may not touch workflow files), and the `pull_request` run of `ef tests`, which waits in
 `action_required` on a bot PR, is approved — a `workflow_dispatch` run does not satisfy a PR's required checks.
 Settings → Actions → «Allow GitHub Actions to create and approve pull requests» is on for this.
+The fork-PR approval policy is «first-time contributors new to GitHub» (was «first-time contributors», which held every
+bot PR's run in `action_required`; a `GITHUB_TOKEN` approval returns 201 but does not release it — measured on #25).
+If a bot PR still shows `action_required`, approve the run in the UI (`gh api -X POST …/actions/runs/<id>/approve`).
 
 Repo settings changed 2026-11-14 (all reversible in Settings): issues, auto-merge and merge commits enabled;
 Dependabot alerts and security updates enabled; a write deploy key `ef-radar` (private half only in the secret
