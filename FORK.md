@@ -78,7 +78,8 @@ Bots open PRs with `GITHUB_TOKEN`, which does not trigger `pull_request`: each o
 branch, so the required checks land on the PR's head commit.
 
 Repo settings changed 2026-11-14 (all reversible in Settings): issues, auto-merge and merge commits enabled;
-Dependabot alerts and security updates enabled; labels `ef`, `dependencies`, `major-needs-review`; upstream workflows
+Dependabot alerts and security updates enabled; a write deploy key `ef-radar` (private half only in the secret
+`EF_RADAR_DEPLOY_KEY`: the radar's upstream branch touches workflow files, which `GITHUB_TOKEN` may not push); labels `ef`, `dependencies`, `major-needs-review`; upstream workflows
 that wait forever for `blacksmith-*` runners disabled (`ensure_sync_service_image`, `elixir_check_formatting`,
 `server_rust_tests`, `electric_telemetry_tests`, `integration_tests`, `elixir_client_tests`, `sync_service_tests`,
 `ts_tests`, `ts_check_formatting`) — `ef tests` replaces the two that cover what we ship.
