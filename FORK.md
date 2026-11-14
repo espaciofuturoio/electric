@@ -15,8 +15,11 @@ The two lines never merge into each other. `ef/sync-service` stays a short patch
 
 ## Patch list (`ef/sync-service`)
 
-Base: `@core/sync-service@1.8.1` (`0f404200`). Applied patches: **none** (release `1.8.1-ef.0` is upstream 1.8.1
-exactly, built by us). Besides patches, the branch only adds this file and `.github/workflows/ef-sync-service-release.yml`.
+Base: `@core/sync-service@1.8.1` (`0f404200`). Release `1.8.1-ef.0` is upstream 1.8.1 exactly, built by us.
+`1.8.1-ef.1` (2026-11-14) adds ONE security patch: Hex deps raised (bandit 1.14.1, plug 1.20.3, phoenix 1.8.16,
+phoenix_live_view 1.2.13, phoenix_html 4.4.0, postgrex 0.22.4, ecto 3.14.3, plug_crypto 2.2.1, hpax 1.1.0, decimal 3.2.0)
+and the image on Elixir 1.20.5 / OTP 29.1.2 / Debian bookworm-20261104. Advisories and reasons: `FORK.md` on `main`,
+§ Security review 2026-11-14 (same set; the agents line was tested with the full sync suite). Besides patches, the branch only adds this file and `.github/workflows/ef-sync-service-release.yml`.
 
 Candidates, not applied:
 - `1bdae5c2a` on `main` — LiveDashboard Metrics page + request logger for the sync service.
