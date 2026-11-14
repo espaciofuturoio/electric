@@ -6,8 +6,12 @@ name: ef fork images
 #   sync:        ghcr.io/espaciofuturoio/electric-sync-service:<sync-service version>-fork.<sha9>
 # The `ef/sync-service` line (`<version>-ef.<n>` tags) has its own workflow; the two tag schemes never collide.
 # A tag that already exists is never overwritten: rerun with a new commit instead.
+# Weekly (schedule) it rebuilds `main` with fresh base layers, so OS and Node/OTP-image security patches land without a
+# code change; those tags carry `.w<YYYYMMDD>` (e.g. 0.6.4-fork.3ad1182c2.w20261116).
 
 on:
+  schedule:
+    - cron: '41 7 * * 1' # Monday 07:41 UTC, after ef-base-images.yml had its chance to merge a base-image bump
   workflow_dispatch:
     inputs:
       ref:
@@ -39,6 +43,7 @@ jobs:
         id: v
         run: |
           sha=$(git rev-parse HEAD); short=$(git rev-parse --short=9 HEAD)
+          [ "$GITHUB_EVENT_NAME" = schedule ] && short="${short}.w$(date -u +%Y%m%d)"
           agents=$(jq -r .version packages/agents-server/package.json)
           sync=$(jq -r .version packages/sync-service/package.json)
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
@@ -82,6 +87,8 @@ jobs:
           file: packages/agents-server/Dockerfile
           platforms: linux/amd64
           push: true
+          pull: true
+          no-cache: ${{ github.event_name == 'schedule' }}
           provenance: false
           tags: ${{ env.COORDINATOR_IMAGE }}:${{ needs.vars.outputs.coordinator_tag }}
           labels: |
@@ -116,6 +123,8 @@ jobs:
             ELECTRIC_VERSION=${{ needs.vars.outputs.sync_version }}
           platforms: linux/amd64
           push: true
+          pull: true
+          no-cache: ${{ github.event_name == 'schedule' }}
           provenance: false
           tags: ${{ env.SYNC_IMAGE }}:${{ needs.vars.outputs.sync_tag }}
           labels: |

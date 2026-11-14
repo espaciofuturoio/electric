@@ -1,3 +1,23 @@
+## This fork (espaciofuturoio/electric)
+
+Our own agent runtime on top of Electric; how we keep it current: [FORK.md](FORK.md). Table refreshed weekly by `ef-versions.yml`.
+
+<!-- ef-versions:start -->
+| Piece | This fork | Newest upstream / published |
+| --- | --- | --- |
+| Coordinator `@electric-ax/agents-server` | 0.6.4 + fork patches | 0.6.4 (npm) |
+| Runtime `@electric-ax/agents-runtime` | 0.6.3 + fork patches | 0.6.3 (npm) |
+| Sync service `@core/sync-service` | 1.8.1 | 1.8.1 (neondatabase/electric) |
+| Elixir | 1.20.5 | 1.20.5 (newest 1.20.x) |
+| Erlang/OTP | 29.1.2 | 29.1.2 (newest 29.x) |
+| Node (coordinator base `node:22-bookworm-slim`, rebuilt weekly) | 22 | 22.23.5 |
+| Postgres (image smoke and boxes) | 18.7 | 18.7 |
+| `@earendil-works/pi-agent-core` (Pi; pi-durable shares the core) | ^0.85.1 | 1.5.2 |
+| `@durable-streams/server` | ^0.3.7 | 0.3.9 |
+| `@tanstack/db` | ^0.9.2 | 1.0.0-rc.1.5 |
+| Latest image release | images-0.6.4-fork.3ad1182c2 | — |
+<!-- ef-versions:end -->
+
 <p align="center">
   <a href="https://electric-sql.com" target="_blank">
     <picture>

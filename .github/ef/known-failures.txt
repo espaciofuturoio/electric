@@ -1,0 +1,10 @@
+# Tests that already failed on `main` when the fork got its own CI (2026-11-14, run 43630883786 on b11584d61, the same
+# set after the security patch). `ef tests` fails on any failure NOT listed here and reports a listed one that now
+# passes, so the list only shrinks. Each needs its own fix (a card); never add a line to make a red PR green.
+# Format: <package>|<test file> > <full test name>
+agents-runtime|test/runtime-dsl.test.ts > D: shared state > D9: a setup-registered shared-state effect fires on the first wake write and survives a later wake
+agents-runtime|test/runtime-dsl.test.ts > I: peer review coordination > I1: peer review aggregates three reviewer writes through shared state
+agents-runtime|test/runtime-dsl.test.ts > K: wiki coordination > K1: wiki specialists accumulate shared articles that a later query can read
+agents-runtime|test/pull-wake-runner.test.ts > createPullWakeRunner > resets heartbeat failure counters across restarts
+agents-server|test/wake-registry.test.ts > Wake Registry > deliverWakeResult keys fanout by registrationDbId and sourceEventKey
+agents-server|test/horton-pull-wake-e2e.test.ts > pull-wake Horton e2e with mocked LLM

@@ -60,3 +60,25 @@ coordinator is proven by `ef-fork-images.yml`'s smoke on the new images.
   wake-path PRs #4720/#4726/#4632 overlap our own fixes #2–#10 and need a dedicated card. #4853/#4854 (hono) only
   touch examples and the desktop app.
 - Upstream advisories GHSA-m4f6 (1.7.12), GHSA-c82q (1.6.10), GHSA-h5rg (1.5.0): already in the 1.8.1 base.
+
+## Staying current (owner 2026-11-14: «que nuestro fork trate de ir al día, con las dependencias»)
+
+A standing practice, not a one-off. Every piece runs from this repo's Actions; each has its rollback.
+
+| Cadence | Piece | What it does | Rollback |
+| --- | --- | --- | --- |
+| every PR, push to `main`, weekly | `ef-tests.yml` | sync-service suite on Postgres 18 (+pgbouncer, one retry of failures only) and the agents-runtime / agents-server suites against our own sync image by digest. Required on `main`. | Remove the required checks in branch protection; disable the workflow. |
+| weekly (Mon) | `dependabot.yml` + `ef-dependabot-automerge.yml` | One grouped PR per ecosystem (Hex, npm for the agents packages, the coordinator Dockerfile, Actions) with all patch + minor updates, auto-merged when `ef tests` is green; each major is its own PR, labelled `major-needs-review`, never auto-merged. Security updates on. | Disable the automerge workflow (`gh pr merge --disable-auto` on open PRs); delete `dependabot.yml`. |
+| weekly (Mon 05:07) | `ef-base-images.yml` (`.github/ef/base-images.sh`) | Sync image base: newest Elixir patch / OTP patch on the same minor/major and newest Debian bookworm slim; PR, tests, auto-merge. Never crosses a major. | Revert the PR. |
+| weekly (Mon 07:41) | `ef-fork-images.yml` (schedule) | Rebuilds `main` with `--pull --no-cache`, tags `<v>-fork.<sha9>.w<YYYYMMDD>`, smoke, release with digests — OS / Node / OpenSSL patches land without a code change. Consumers adopt a digest by PR (ai-agents `infra/fork-images.env`, neo's two session composes). | Consumers keep their pinned digests; disable the schedule. |
+| weekly + push | `ef-versions.yml` (`.github/ef/versions.sh`) | The README table: this fork vs newest upstream / published for each key piece. PR, auto-merge. | Disable; the table just stops refreshing. |
+| monthly (1st) | `ef-radar.yml` (`.github/ef/radar.sh`) | Merges neondatabase/electric `main` into `ef/upstream-<YYYY-MM>` (or cherry-picks with a conflict note naming each skipped commit and its files), opens the PR (a person merges it as a MERGE commit), runs `ef tests` on it, and opens the issue «Fork radar <YYYY-MM>» with Pi (earendil-works/pi: pi-agent-core, pi-ai, pi-durable), Durable Streams, TanStack DB versions and the advisories (upstream GHSA, OSV over the Hex lock, `pnpm audit` over the coordinator's packages). | Disable; close the PR and delete the branch. |
+
+Bots open PRs with `GITHUB_TOKEN`, which does not trigger `pull_request`: each one dispatches `ef-tests.yml` on its
+branch, so the required checks land on the PR's head commit.
+
+Repo settings changed 2026-11-14 (all reversible in Settings): issues, auto-merge and merge commits enabled;
+Dependabot alerts and security updates enabled; labels `ef`, `dependencies`, `major-needs-review`; upstream workflows
+that wait forever for `blacksmith-*` runners disabled (`ensure_sync_service_image`, `elixir_check_formatting`,
+`server_rust_tests`, `electric_telemetry_tests`, `integration_tests`, `elixir_client_tests`, `sync_service_tests`,
+`ts_tests`, `ts_check_formatting`) — `ef tests` replaces the two that cover what we ship.

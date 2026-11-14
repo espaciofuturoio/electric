@@ -1,0 +1,39 @@
+name: ef base images
+
+# Weekly: raise the sync image's Elixir/OTP/Debian base to the newest PATCH on the same Elixir minor and OTP major
+# (.github/ef/base-images.sh), as a PR that auto-merges when `ef tests` is green. Node's base is the floating
+# `node:22-bookworm-slim`, refreshed by ef-fork-images.yml's weekly no-cache rebuild; Dependabot proposes the tag change.
+# Rollback: revert the merged PR; images already published keep their digests.
+
+on:
+  schedule:
+    - cron: '7 5 * * 1' # Monday 05:07 UTC, before the weekly image rebuild (07:41)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: bump
+        run: |
+          out="$(.github/ef/base-images.sh)"; echo "$out"
+          git diff --quiet && echo "changed=false" >> "$GITHUB_OUTPUT" || { echo "changed=true" >> "$GITHUB_OUTPUT"; echo "summary=$out" >> "$GITHUB_OUTPUT"; }
+      - name: PR, test dispatch, auto-merge
+        if: steps.bump.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUMMARY: ${{ steps.bump.outputs.summary }}
+        run: |
+          branch="ef/base-images-$(date -u +%Y%m%d)"
+          git config user.name "ef-bot"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"; git commit -qam "ef: sync image base — $SUMMARY"; git push -q -f origin "$branch"
+          url="$(gh pr create --base main --head "$branch" --label ef --title "ef: sync image base — $SUMMARY" \
+            --body "Patch-level base bump by ef-base-images.yml (same Elixir minor, OTP major, Debian bookworm). Auto-merges when \`ef tests\` is green. Rollback: revert.")"
+          gh workflow run ef-tests.yml --ref "$branch"
+          gh pr merge --auto --squash "$url"

@@ -1,0 +1,42 @@
+# The fork's dependency upkeep (FORK.md § Staying current). Weekly, grouped: one PR per ecosystem with every patch and
+# minor update (auto-merged by ef-dependabot-automerge.yml once `ef tests` is green), and each major in its own PR
+# (never auto-merged: it needs a human and notes). Security updates are on too and follow the same rules.
+# Only what our images ship is watched: the agents packages, the sync service and its telemetry lib, the two
+# Dockerfiles and the Actions. Examples, the website and the desktop/mobile apps are upstream's, not ours.
+version: 2
+updates:
+  - package-ecosystem: mix
+    directories: [/packages/sync-service, /packages/electric-telemetry]
+    schedule: { interval: weekly, day: monday, time: '05:00' }
+    open-pull-requests-limit: 10
+    groups:
+      hex-patch-minor: { update-types: [patch, minor] }
+    labels: [dependencies, ef]
+
+  - package-ecosystem: npm
+    directories:
+      - /packages/agents-server
+      - /packages/agents-runtime
+      - /packages/agents-mcp
+      - /packages/agents-server-ui
+      - /packages/typescript-client
+    schedule: { interval: weekly, day: monday, time: '05:00' }
+    open-pull-requests-limit: 10
+    versioning-strategy: increase-if-necessary
+    groups:
+      npm-patch-minor: { update-types: [patch, minor] }
+    labels: [dependencies, ef]
+
+  - package-ecosystem: docker
+    directories: [/packages/agents-server]
+    schedule: { interval: weekly, day: monday, time: '05:00' }
+    groups:
+      docker: { update-types: [patch, minor] }
+    labels: [dependencies, ef]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly, day: monday, time: '05:00' }
+    groups:
+      actions: { update-types: [patch, minor] }
+    labels: [dependencies, ef]
