@@ -1,0 +1,31 @@
+name: ef dependabot automerge
+
+# Patch/minor Dependabot PRs merge themselves once the required `ef tests` checks pass (branch protection on main);
+# a major is labelled and left for a person, with the release notes Dependabot already puts in the PR.
+# Rollback: disable this workflow; open PRs stop auto-merging (`gh pr merge --disable-auto <n>`).
+
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - id: meta
+        uses: dependabot/fetch-metadata@v2
+      - name: Auto-merge patch and minor
+        if: steps.meta.outputs.update-type != 'version-update:semver-major'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.html_url }}
+        run: gh pr merge --auto --squash "$PR"
+      - name: Label a major for review
+        if: steps.meta.outputs.update-type == 'version-update:semver-major'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.html_url }}
+        run: gh pr edit "$PR" --add-label major-needs-review

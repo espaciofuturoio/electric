@@ -101,6 +101,7 @@ jobs:
         run: pnpm --filter "@electric-ax/agents-server^..." --filter "@electric-ax/agents-runtime^..." build
       - run: pnpm --filter @electric-ax/agents-runtime test
       - run: pnpm --filter @electric-ax/agents-server test
+        if: ${{ !cancelled() }}
       - name: Backend logs on failure
         if: failure()
         run: docker logs electric 2>&1 | tail -80

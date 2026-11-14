@@ -1,0 +1,49 @@
+name: ef radar
+
+# Monthly (FORK.md § Staying current): .github/ef/radar.sh merges neondatabase/electric `main` into
+# `ef/upstream-<YYYY-MM>` (or cherry-picks with a conflict note), and reports Pi / Durable Streams / TanStack DB versions
+# and advisories. The workflow pushes the branch, opens the PR (never auto-merged: a person reads the upstream changes
+# and merges it as a MERGE commit), dispatches `ef tests` on it and opens the month's issue with the report.
+# Rollback: disable this workflow; close the PR and delete the branch.
+
+on:
+  schedule:
+    - cron: '23 6 1 * *' # the 1st of every month, 06:23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - id: radar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/ef/radar.sh "$RUNNER_TEMP/radar.md"
+      - name: PR, tests, issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.radar.outputs.branch }}
+        run: |
+          month="$(date -u +%Y-%m)"; report="$RUNNER_TEMP/radar.md"; pr=""
+          if [ -n "$BRANCH" ]; then
+            git push -q -f origin "$BRANCH"
+            pr="$(gh pr list --head "$BRANCH" --json url -q '.[0].url')"
+            [ -n "$pr" ] || pr="$(gh pr create --base main --head "$BRANCH" --label ef \
+              --title "ef: upstream neondatabase/electric ($month)" --body-file "$report")"
+            gh workflow run ef-tests.yml --ref "$BRANCH"
+          fi
+          { cat "$report"; echo; [ -n "$pr" ] && echo "Upstream PR: $pr (merge as a merge commit once \`ef tests\` is green)."; } > "$RUNNER_TEMP/issue.md"
+          gh issue create --title "Fork radar $month" --label ef --body-file "$RUNNER_TEMP/issue.md"
