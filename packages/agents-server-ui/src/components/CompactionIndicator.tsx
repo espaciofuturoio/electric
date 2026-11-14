@@ -28,12 +28,10 @@ interface CompactionIndicatorProps {
 export function CompactionIndicator({
   db,
 }: CompactionIndicatorProps): React.ReactElement | null {
-  const { data: rows = [] } = useLiveQuery(
-    (q) =>
-      db && db.collections.contextInserted
-        ? q.from({ entry: db.collections.contextInserted as any })
-        : undefined,
-    [db]
+  const { data: rows = [] } = useLiveQuery((q) =>
+    db && db.collections.contextInserted
+      ? q.from({ entry: db.collections.contextInserted as any })
+      : undefined
   )
 
   const latest = useMemo(() => {

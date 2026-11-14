@@ -119,13 +119,10 @@ export function ShareEntityDialog({
   const [selectedRole, setSelectedRole] = useState<ShareRole>(`chat`)
   const { userId: currentUserId } = useCurrentPrincipal()
 
-  const { data: users = [] } = useLiveQuery(
-    (q) => {
-      if (!usersCollection) return undefined
-      return q.from({ user: usersCollection })
-    },
-    [usersCollection]
-  )
+  const { data: users = [] } = useLiveQuery((q) => {
+    if (!usersCollection) return undefined
+    return q.from({ user: usersCollection })
+  })
 
   const sortedUsers = useMemo(() => {
     return [...users].sort((a, b) =>

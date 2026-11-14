@@ -80,23 +80,20 @@ export function SidebarViewMenu(): React.ReactElement {
   // Distinct types currently present in the entities collection —
   // drives the "Show > Type" submenu so newly-introduced agent kinds
   // appear automatically rather than being hardcoded here.
-  const { data: entities = [] } = useLiveQuery(
-    (q) => {
-      if (!entitiesCollection) return undefined
-      return q
-        .from({ e: entitiesCollection })
-        .where(({ e }) => not(eq(e.type, `principal`)))
-        .orderBy(({ e }) => e.updated_at, `desc`)
-        .select(({ e }) => ({
-          url: e.url,
-          type: e.type,
-          parent: e.parent,
-          created_by: e.created_by,
-          dispatch_policy: e.dispatch_policy,
-        }))
-    },
-    [entitiesCollection]
-  )
+  const { data: entities = [] } = useLiveQuery((q) => {
+    if (!entitiesCollection) return undefined
+    return q
+      .from({ e: entitiesCollection })
+      .where(({ e }) => not(eq(e.type, `principal`)))
+      .orderBy(({ e }) => e.updated_at, `desc`)
+      .select(({ e }) => ({
+        url: e.url,
+        type: e.type,
+        parent: e.parent,
+        created_by: e.created_by,
+        dispatch_policy: e.dispatch_policy,
+      }))
+  })
   const distinctTypes = useMemo(() => {
     const seen = new Set<string>()
     for (const e of entities) seen.add(e.type)
@@ -104,26 +101,20 @@ export function SidebarViewMenu(): React.ReactElement {
   }, [entities])
 
   // Runner id → label, for the "Show > Runner" submenu.
-  const { data: runners = [] } = useLiveQuery(
-    (q) => {
-      if (!runnersCollection) return undefined
-      return q.from({ r: runnersCollection })
-    },
-    [runnersCollection]
-  )
+  const { data: runners = [] } = useLiveQuery((q) => {
+    if (!runnersCollection) return undefined
+    return q.from({ r: runnersCollection })
+  })
   const runnerLabelById = useMemo(() => {
     const map = new Map<string, string>()
     for (const r of runners) map.set(r.id, r.label || r.id)
     return map
   }, [runners])
 
-  const { data: users = [] } = useLiveQuery(
-    (q) => {
-      if (!usersCollection) return undefined
-      return q.from({ user: usersCollection })
-    },
-    [usersCollection]
-  )
+  const { data: users = [] } = useLiveQuery((q) => {
+    if (!usersCollection) return undefined
+    return q.from({ user: usersCollection })
+  })
   const usersById = useMemo(
     () => new Map(users.map((user) => [user.id, user])),
     [users]

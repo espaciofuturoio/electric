@@ -89,15 +89,12 @@ function EntityTileBody({
   const { workspace, helpers } = useWorkspace()
   const canRearrange = listTiles(workspace.root).length > 1
 
-  const { data: matches = [], isLoading } = useLiveQuery(
-    (q) => {
-      if (!entitiesCollection) return undefined
-      return q
-        .from({ e: entitiesCollection })
-        .where(({ e }) => eq(e.url, entityUrl))
-    },
-    [entitiesCollection, entityUrl]
-  )
+  const { data: matches = [], isLoading } = useLiveQuery((q) => {
+    if (!entitiesCollection) return undefined
+    return q
+      .from({ e: entitiesCollection })
+      .where(({ e }) => eq(e.url, entityUrl))
+  })
   const entity = matches.at(0) ?? null
   const isSpawning = entity?.status === `spawning`
   const entityStopped =

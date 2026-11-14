@@ -99,10 +99,13 @@ type AnyFunction = (...args: Array<any>) => unknown
 export type EntityActionMap = Record<string, AnyFunction>
 export type EntityStateDefinition = Record<string, CollectionDefinition>
 
+/**
+ * A write's handle. `when('settled')` resolves once the write is persisted to the
+ * entity stream and rejects if it fails or rolls back (TanStack DB 1.0's
+ * `Transaction.when`; replaces 0.x `isPersisted.promise`).
+ */
 export interface EntityTransaction {
-  isPersisted: {
-    promise: Promise<unknown>
-  }
+  when: (state: `settled`) => Promise<unknown>
 }
 
 type UnionToIntersection<T> = (
@@ -479,7 +482,7 @@ export type EffectConfig<
 /**
  * Proxy handle for a single custom state collection exposed on `SharedStateHandle`.
  * Mutating methods (insert/update/delete) return a Transaction (fire-and-forget
- * or await via `tx.isPersisted.promise`). Read methods delegate to the underlying
+ * or await via `tx.when('settled')`). Read methods delegate to the underlying
  * TanStack DB collection.
  */
 export interface StateCollectionProxy<

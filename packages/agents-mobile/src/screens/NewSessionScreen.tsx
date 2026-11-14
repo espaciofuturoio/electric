@@ -98,18 +98,16 @@ export function NewSessionScreen({
     (query) =>
       query
         .from({ type: entityTypesCollection })
-        .orderBy(({ type }) => type.name, `asc`),
-    [entityTypesCollection]
-  )
+        .orderBy(({ type }) => type.name, `asc`)
+)
 
   const { data: enabledRunners = [] } = useLiveQuery(
     (query) =>
       query
         .from({ runner: runnersCollection })
         .where(({ runner }) => eq(runner.admin_status, `enabled`))
-        .orderBy(({ runner }) => runner.label, `asc`),
-    [runnersCollection]
-  )
+        .orderBy(({ runner }) => runner.label, `asc`)
+)
 
   const visibleTypes = useMemo(
     () => entityTypes.filter((type) => type.name !== `worker`),
@@ -180,9 +178,8 @@ export function NewSessionScreen({
   // dispatched to the selected runner — the same per-runner list the
   // desktop picker shows, with no local storage.
   const { data: allEntities = [] } = useLiveQuery(
-    (query) => query.from({ entity: entitiesCollection }),
-    [entitiesCollection]
-  )
+    (query) => query.from({ entity: entitiesCollection })
+)
   const recentDirs = useMemo(
     () =>
       activeRunnerId

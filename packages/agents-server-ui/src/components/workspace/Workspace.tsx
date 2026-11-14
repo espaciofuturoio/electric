@@ -82,15 +82,12 @@ export function Workspace(): React.ReactElement {
   }, [layoutParam, helpers, navigate, splat, requestedViewId, entityUrl])
 
   const { entitiesCollection } = useElectricAgents()
-  const { data: entityMatches = [] } = useLiveQuery(
-    (q) => {
-      if (!entitiesCollection || !entityUrl) return undefined
-      return q
-        .from({ e: entitiesCollection })
-        .where(({ e }) => eq(e.url, entityUrl))
-    },
-    [entitiesCollection, entityUrl]
-  )
+  const { data: entityMatches = [] } = useLiveQuery((q) => {
+    if (!entitiesCollection || !entityUrl) return undefined
+    return q
+      .from({ e: entitiesCollection })
+      .where(({ e }) => eq(e.url, entityUrl))
+  })
   const entity = entityMatches.at(0) ?? null
 
   // ---- URL → workspace -------------------------------------------------

@@ -16,7 +16,7 @@ import {
   sum,
   toArray,
 } from '@durable-streams/state/db'
-import { BasicIndex, caseWhen } from '@tanstack/db'
+import { BasicIndex, caseWhen, include } from '@tanstack/db'
 import type {
   Collection,
   InitialQueryBuilder,
@@ -1398,7 +1398,7 @@ function buildEntityTimelineQuery(
       or(
         eq(coalesce(inbox.status, `processed`), `processed`),
         and(
-          eq(inbox.$synced, false),
+          eq(inbox.$hasPendingWrites, true),
           eq(coalesce(inbox.status, `pending`), `pending`),
           like(coalesce(inbox._timeline_order, ``), `~pending:%`)
         )
@@ -1594,77 +1594,85 @@ function buildEntityTimelineQuery(
           ),
         }
       ),
-      items: q
-        .from({ item: runItemsSource })
-        .where(({ item }) => eq(item.run_id, run.key))
-        .orderBy(({ item }) => item.order)
-        .orderBy(({ item }) =>
-          coalesce(
-            caseWhen(item.text.key, `text`),
-            caseWhen(item.toolCall.key, `toolCall`),
-            ``
+      items: include(
+        q
+          .from({ item: runItemsSource })
+          .where(({ item }) => eq(item.run_id, run.key))
+          .orderBy(({ item }) => item.order)
+          .orderBy(({ item }) =>
+            coalesce(
+              caseWhen(item.text.key, `text`),
+              caseWhen(item.toolCall.key, `toolCall`),
+              ``
+            )
           )
-        )
-        .orderBy(({ item }) => coalesce(item.text.key, item.toolCall.key, ``))
-        .select(({ item }) => ({
-          text: caseWhen(item.text.key, {
-            key: item.text.key,
-            run_id: item.text.run_id,
-            order: item.text.order,
-            status: item.text.status,
-            content: item.textContent,
-          }),
-          toolCall: item.toolCall,
-        })),
-      reasoning: q
-        .from({ r: runReasoningSource })
-        .where(({ r }) => eq(r.run_id, run.key))
-        .orderBy(({ r }) => r.order)
-        .orderBy(({ r }) => r.key)
-        .select(({ r }) => ({
-          key: r.key,
-          run_id: r.run_id,
-          order: r.order,
-          status: r.status,
-          // Wrap the include reference inside a `caseWhen` object body
-          // — the same construct items uses to materialize
-          // `item.textContent` into `text.content`. Bare top-level
-          // references leave the include deferred until UI reads it
-          // through `useLiveQuery`, which never gets through. UI reads
-          // `entry.body?.content` instead of `entry.content`.
-          body: caseWhen(r.key, {
-            content: r.reasoningContent,
-          }),
-          summary_title: r.summary_title,
-          encrypted: r.encrypted,
-        })),
-      steps: q
-        .from({ step: db.collections.steps })
-        .where(({ step }) => eq(step.run_id, run.key))
-        .orderBy(({ step }) => step.step_number)
-        .orderBy(({ step }) => coalesce(step._timeline_order, `~`))
-        .orderBy(({ step }) => step.key)
-        .select(({ step }) => ({
-          key: step.key,
-          run_id: step.run_id,
-          order: coalesce(step._timeline_order, `~`),
-          step_number: step.step_number,
-          status: step.status,
-          model_id: step.model_id,
-          duration_ms: step.duration_ms,
-          input_tokens: step.input_tokens,
-          output_tokens: step.output_tokens,
-        })),
-      errors: q
-        .from({ error: db.collections.errors })
-        .where(({ error }) => eq(error.run_id, run.key))
-        .orderBy(({ error }) => error.key)
-        .select(({ error }) => ({
-          key: error.key,
-          run_id: error.run_id,
-          error_code: error.error_code,
-          message: error.message,
-        })),
+          .orderBy(({ item }) => coalesce(item.text.key, item.toolCall.key, ``))
+          .select(({ item }) => ({
+            text: caseWhen(item.text.key, {
+              key: item.text.key,
+              run_id: item.text.run_id,
+              order: item.text.order,
+              status: item.text.status,
+              content: item.textContent,
+            }),
+            toolCall: item.toolCall,
+          }))
+      ),
+      reasoning: include(
+        q
+          .from({ r: runReasoningSource })
+          .where(({ r }) => eq(r.run_id, run.key))
+          .orderBy(({ r }) => r.order)
+          .orderBy(({ r }) => r.key)
+          .select(({ r }) => ({
+            key: r.key,
+            run_id: r.run_id,
+            order: r.order,
+            status: r.status,
+            // Wrap the include reference inside a `caseWhen` object body
+            // — the same construct items uses to materialize
+            // `item.textContent` into `text.content`. Bare top-level
+            // references leave the include deferred until UI reads it
+            // through `useLiveQuery`, which never gets through. UI reads
+            // `entry.body?.content` instead of `entry.content`.
+            body: caseWhen(r.key, {
+              content: r.reasoningContent,
+            }),
+            summary_title: r.summary_title,
+            encrypted: r.encrypted,
+          }))
+      ),
+      steps: include(
+        q
+          .from({ step: db.collections.steps })
+          .where(({ step }) => eq(step.run_id, run.key))
+          .orderBy(({ step }) => step.step_number)
+          .orderBy(({ step }) => coalesce(step._timeline_order, `~`))
+          .orderBy(({ step }) => step.key)
+          .select(({ step }) => ({
+            key: step.key,
+            run_id: step.run_id,
+            order: coalesce(step._timeline_order, `~`),
+            step_number: step.step_number,
+            status: step.status,
+            model_id: step.model_id,
+            duration_ms: step.duration_ms,
+            input_tokens: step.input_tokens,
+            output_tokens: step.output_tokens,
+          }))
+      ),
+      errors: include(
+        q
+          .from({ error: db.collections.errors })
+          .where(({ error }) => eq(error.run_id, run.key))
+          .orderBy(({ error }) => error.key)
+          .select(({ error }) => ({
+            key: error.key,
+            run_id: error.run_id,
+            error_code: error.error_code,
+            message: error.message,
+          }))
+      ),
     }))
 
   const sources: Record<string, any> = {

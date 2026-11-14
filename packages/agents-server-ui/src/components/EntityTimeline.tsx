@@ -1430,52 +1430,40 @@ export function EntityTimeline({
     () => entityUrlsFromKey(referencedEntityUrlKey),
     [referencedEntityUrlKey]
   )
-  const { data: entityStatuses = [] } = useLiveQuery(
-    (q) => {
-      if (!entitiesCollection || referencedEntityUrls.length === 0) {
-        return undefined
-      }
-      return q
-        .from({ e: entitiesCollection as any })
-        .where(({ e }: any) => inArray(e.url, referencedEntityUrls))
-        .select(({ e }: any) => ({
-          url: e.url,
-          status: e.status,
-        }))
-    },
-    [entitiesCollection, referencedEntityUrlKey]
-  )
+  const { data: entityStatuses = [] } = useLiveQuery((q) => {
+    if (!entitiesCollection || referencedEntityUrls.length === 0) {
+      return undefined
+    }
+    return q
+      .from({ e: entitiesCollection as any })
+      .where(({ e }: any) => inArray(e.url, referencedEntityUrls))
+      .select(({ e }: any) => ({
+        url: e.url,
+        status: e.status,
+      }))
+  })
   // Pull the sandbox profile name for the currently-focused entity so
   // we can surface it as a read-only badge next to the spawned marker.
   // The sandbox choice is set at spawn time and immutable for the
   // entity's lifetime, so a single read here is sufficient.
-  const { data: focusedEntity = [] } = useLiveQuery(
-    (q) => {
-      if (!entitiesCollection || !entityUrl) return undefined
-      return q
-        .from({ e: entitiesCollection as any })
-        .where(({ e }: any) => eq(e.url, entityUrl))
-        .select(({ e }: any) => ({ sandbox: e.sandbox }))
-    },
-    [entitiesCollection, entityUrl]
-  )
+  const { data: focusedEntity = [] } = useLiveQuery((q) => {
+    if (!entitiesCollection || !entityUrl) return undefined
+    return q
+      .from({ e: entitiesCollection as any })
+      .where(({ e }: any) => eq(e.url, entityUrl))
+      .select(({ e }: any) => ({ sandbox: e.sandbox }))
+  })
   const sandboxProfileName = focusedEntity[0]?.sandbox?.profile ?? null
   // Resolve the profile's advertised label (e.g. "Docker") rather than the raw
   // profile name, matching how the header/sidebar badges render it.
-  const { data: runners = [] } = useLiveQuery(
-    (q) => {
-      if (!runnersCollection) return undefined
-      return q.from({ r: runnersCollection })
-    },
-    [runnersCollection]
-  )
-  const { data: users = [] } = useLiveQuery(
-    (q) => {
-      if (!usersCollection) return undefined
-      return q.from({ user: usersCollection })
-    },
-    [usersCollection]
-  )
+  const { data: runners = [] } = useLiveQuery((q) => {
+    if (!runnersCollection) return undefined
+    return q.from({ r: runnersCollection })
+  })
+  const { data: users = [] } = useLiveQuery((q) => {
+    if (!usersCollection) return undefined
+    return q.from({ user: usersCollection })
+  })
   const usersById = useMemo(
     () => new Map(users.map((user) => [user.id, user])),
     [users]

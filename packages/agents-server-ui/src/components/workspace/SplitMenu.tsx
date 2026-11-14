@@ -220,7 +220,7 @@ export function SplitMenu({
   const handleKill = () => {
     if (!canSignal || !killEntity || entityUrl === null) return
     const tx = killEntity(entityUrl)
-    tx.isPersisted.promise.catch(() => {})
+    tx.when(`settled`).catch(() => {})
   }
 
   const handleStopImmediately = () => {
@@ -230,14 +230,15 @@ export function SplitMenu({
       signal: `SIGSTOP`,
       reason: `Stopped immediately from tile menu`,
     })
-    stopTx.isPersisted.promise
+    stopTx
+      .when(`settled`)
       .then(() => {
         const interruptTx = signalEntity({
           entityUrl,
           signal: `SIGINT`,
           reason: `Interrupted current run for immediate stop`,
         })
-        interruptTx.isPersisted.promise.catch(() => {})
+        interruptTx.when(`settled`).catch(() => {})
       })
       .catch(() => {})
   }
@@ -249,7 +250,7 @@ export function SplitMenu({
       signal,
       reason: `Sent from tile menu`,
     })
-    tx.isPersisted.promise.catch(() => {})
+    tx.when(`settled`).catch(() => {})
   }
 
   const handleSignalOption = (

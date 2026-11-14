@@ -136,15 +136,12 @@ export function EntityContextDrawer({
 
   const parentUrl = entity.parent
 
-  const { data: manifests = [] } = useLiveQuery(
-    (q) => {
-      if (!db) return undefined
-      return q
-        .from({ manifest: db.collections.manifests })
-        .orderBy(({ manifest }) => manifest._seq, `asc`)
-    },
-    [db]
-  )
+  const { data: manifests = [] } = useLiveQuery((q) => {
+    if (!db) return undefined
+    return q
+      .from({ manifest: db.collections.manifests })
+      .orderBy(({ manifest }) => manifest._seq, `asc`)
+  })
 
   const referencedEntityUrlKey = useMemo(() => {
     const urls = new Set<string>()
@@ -166,24 +163,21 @@ export function EntityContextDrawer({
     [referencedEntityUrlKey]
   )
 
-  const { data: referencedEntities = [] } = useLiveQuery(
-    (q) => {
-      if (!entitiesCollection || referencedEntityUrls.length === 0) {
-        return undefined
-      }
-      return q
-        .from({ e: entitiesCollection })
-        .where(({ e }) => inArray(e.url, referencedEntityUrls))
-        .select(({ e }) => ({
-          url: e.url,
-          type: e.type,
-          status: e.status,
-          tags: e.tags,
-          spawn_args: e.spawn_args,
-        }))
-    },
-    [entitiesCollection, referencedEntityUrlKey]
-  )
+  const { data: referencedEntities = [] } = useLiveQuery((q) => {
+    if (!entitiesCollection || referencedEntityUrls.length === 0) {
+      return undefined
+    }
+    return q
+      .from({ e: entitiesCollection })
+      .where(({ e }) => inArray(e.url, referencedEntityUrls))
+      .select(({ e }) => ({
+        url: e.url,
+        type: e.type,
+        status: e.status,
+        tags: e.tags,
+        spawn_args: e.spawn_args,
+      }))
+  })
 
   const entitiesByUrl = useMemo(() => {
     return new Map(referencedEntities.map((e) => [e.url, e]))

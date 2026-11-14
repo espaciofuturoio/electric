@@ -308,7 +308,7 @@ vi.mock(`../src/entity-stream-db`, () => ({
               }
             },
           })
-          void transaction.isPersisted.promise.catch(() => undefined)
+          void transaction.when(`settled`).catch(() => undefined)
           return transaction
         })
 
@@ -352,7 +352,7 @@ vi.mock(`../src/entity-stream-db`, () => ({
               }) => {
                 applyEventToCollection(event)
                 return {
-                  isPersisted: { promise: Promise.resolve() },
+                  when: () => Promise.resolve(),
                   mutations: [],
                   state: `completed`,
                 }
