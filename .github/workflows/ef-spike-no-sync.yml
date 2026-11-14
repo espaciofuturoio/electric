@@ -1,0 +1,67 @@
+name: ef spike no sync
+
+# SPIKE (not for main): the agents suites with Electric vs with NO sync container, on the same runner type.
+on:
+  pull_request:
+    paths: ['.github/workflows/ef-spike-no-sync.yml']
+
+permissions:
+  contents: read
+
+env:
+  POSTGRES_IMAGE: postgres:18.7-alpine@sha256:75dcac3dfb1cd01ca3536910bbc84128759362f8b118bf8c55b38a94f68f3b73
+  EF_SYNC_IMAGE: ghcr.io/espaciofuturoio/electric-sync-service:1.8.1-fork.3ad1182c2@sha256:999664048a9ae688dac9f0ec1ab267844423c2f53d1f279385d07f7988e90109
+
+jobs:
+  suites:
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [electric, none]
+    name: agents suites (${{ matrix.mode }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      DATABASE_URL: postgres://electric_agents:electric_agents@localhost:5432/electric_agents
+      # Set in both modes so the tests never start their own compose stack; in `none` nothing listens there.
+      ELECTRIC_URL: http://localhost:3060
+      EF_SPIKE_NO_ELECTRIC: ${{ matrix.mode == 'none' && '1' || '0' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Backend
+        run: |
+          docker network create be
+          docker run -d --name pg --network be -p 5432:5432 -e POSTGRES_DB=electric_agents -e POSTGRES_USER=electric_agents \
+            -e POSTGRES_PASSWORD=electric_agents "$POSTGRES_IMAGE" -c wal_level=logical -c max_connections=300
+          for i in $(seq 1 30); do docker exec pg pg_isready -U electric_agents && break; sleep 1; done
+          if [ "${{ matrix.mode }}" = electric ]; then
+            docker run -d --name electric --network be -p 3060:3000 \
+              -e DATABASE_URL=postgresql://electric_agents:electric_agents@pg:5432/electric_agents -e ELECTRIC_INSECURE=true "$EF_SYNC_IMAGE"
+            for i in $(seq 1 60); do curl -fs localhost:3060/v1/health | grep -q active && break; sleep 2; done
+          fi
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --filter "@electric-ax/agents-server..." --filter "@electric-ax/agents-runtime..." --filter "@electric-ax/agents-server-conformance-tests..."
+      - run: pnpm --filter "@electric-ax/agents-server^..." --filter "@electric-ax/agents-runtime^..." build
+      - name: conformance (timed)
+        run: |
+          s=$(date +%s); pnpm --filter @electric-ax/agents-server exec vitest run test/conformance.test.ts --reporter=default --reporter=json --outputFile="$RUNNER_TEMP/conf.json" || true
+          echo "conformance seconds: $(( $(date +%s) - s ))"
+      - name: agents-server full suite
+        run: pnpm --filter @electric-ax/agents-server exec vitest run --reporter=default --reporter=json --outputFile="$RUNNER_TEMP/server.json" || true
+      - name: agents-runtime full suite
+        run: pnpm --filter @electric-ax/agents-runtime exec vitest run --reporter=default --reporter=json --outputFile="$RUNNER_TEMP/runtime.json" || true
+      - name: Summary
+        run: |
+          for f in conf server runtime; do
+            node -e '
+              const r=require(process.argv[1]); const fails=[];
+              for (const s of r.testResults) for (const t of s.assertionResults) if (t.status==="failed") fails.push(s.name.split("/test/")[1]+" > "+[...t.ancestorTitles,t.title].join(" > "));
+              console.log(`${process.argv[2]} (${process.env.MODE}): passed=${r.numPassedTests} failed=${r.numFailedTests} skipped=${r.numPendingTests} files_failed=${r.numFailedTestSuites}`);
+              for (const f of fails) console.log("  FAIL " + f)' "$RUNNER_TEMP/$f.json" "$f"
+          done | tee -a "$GITHUB_STEP_SUMMARY"
+        env:
+          MODE: ${{ matrix.mode }}

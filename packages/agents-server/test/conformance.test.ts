@@ -21,6 +21,10 @@ const CLI_BIN = path.resolve(
   __dirname,
   `../../electric-agents-cli/src/index.ts`
 )
+// Spike (ai-agents electric-fork-hardening step 4): EF_SPIKE_NO_ELECTRIC=1 starts the coordinator with NO Electric URL —
+// the wake registry then works from Postgres + its own write-through cache, and the Electric-backed projections are off.
+const SERVER_ELECTRIC_URL =
+  process.env.EF_SPIKE_NO_ELECTRIC === `1` ? undefined : TEST_ELECTRIC_URL
 const MOCK_STREAM_FN = createMockStreamFn(
   `I am a mock agent response. The answer is 42.`
 )
@@ -43,7 +47,7 @@ describe(`Electric Agents Entity Runtime`, () => {
       durableStreamsUrl: durableStreamTestServerUrl(dsServer.url),
       port: 0,
       postgresUrl: TEST_POSTGRES_URL,
-      electricUrl: TEST_ELECTRIC_URL,
+      electricUrl: SERVER_ELECTRIC_URL,
     })
     config.baseUrl = await electricAgentsServer.start()
   }, 120_000)
@@ -72,7 +76,7 @@ describeCli(`Electric Agents CLI`, () => {
       durableStreamsUrl: durableStreamTestServerUrl(dsServer.url),
       port: 0,
       postgresUrl: TEST_POSTGRES_URL,
-      electricUrl: TEST_ELECTRIC_URL,
+      electricUrl: SERVER_ELECTRIC_URL,
     })
     config.baseUrl = await electricAgentsServer.start()
   }, 120_000)
@@ -102,7 +106,7 @@ describe(`Electric Agents Mock Agent`, () => {
       port: 0,
       mockStreamFn: MOCK_STREAM_FN,
       postgresUrl: TEST_POSTGRES_URL,
-      electricUrl: TEST_ELECTRIC_URL,
+      electricUrl: SERVER_ELECTRIC_URL,
     })
     config.baseUrl = await electricAgentsServer.start()
   }, 120_000)
@@ -132,7 +136,7 @@ describeCli(`Electric Agents CLI with Mock Agent`, () => {
       port: 0,
       mockStreamFn: MOCK_STREAM_FN,
       postgresUrl: TEST_POSTGRES_URL,
-      electricUrl: TEST_ELECTRIC_URL,
+      electricUrl: SERVER_ELECTRIC_URL,
     })
     config.baseUrl = await electricAgentsServer.start()
   }, 120_000)
