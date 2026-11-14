@@ -26,8 +26,8 @@ concurrency:
 
 env:
   POSTGRES_IMAGE: postgres:18.7-alpine@sha256:75dcac3dfb1cd01ca3536910bbc84128759362f8b118bf8c55b38a94f68f3b73
-  # Our sync image the coordinator tests run against (ef-base-images.yml raises it with each weekly rebuild).
-  EF_SYNC_IMAGE: ghcr.io/espaciofuturoio/electric-sync-service:1.8.1-fork.d3cd4eb73@sha256:225eca744c614ce9eb145654aab4c098cc5b6ba64613e1f0699911578b8877f9
+  # Our sync image the coordinator tests run against (raise it by hand to a newer `images-*` release; the radar lists it).
+  EF_SYNC_IMAGE: ghcr.io/espaciofuturoio/electric-sync-service:1.8.1-fork.3ad1182c2@sha256:999664048a9ae688dac9f0ec1ab267844423c2f53d1f279385d07f7988e90109
 
 jobs:
   sync-service:
