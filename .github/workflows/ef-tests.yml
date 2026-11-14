@@ -81,7 +81,7 @@ jobs:
       ELECTRIC_URL: http://localhost:3060
     steps:
       - uses: actions/checkout@v4
-      - name: Postgres 18 + our sync image (explicit backend: the tests skip their own compose stack)
+      - name: Postgres 18 + our sync image (an explicit backend, so the tests skip their own compose stack)
         run: |
           docker network create be
           docker run -d --name pg --network be -p 5432:5432 -e POSTGRES_DB=electric_agents -e POSTGRES_USER=electric_agents \
