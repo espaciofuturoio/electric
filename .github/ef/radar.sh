@@ -76,6 +76,17 @@ say ""
 say "Pi releases in the last 35 days: $(gh release list -R earendil-works/pi --limit 30 --json tagName,publishedAt -q "[.[]|select(.publishedAt > \"$(date -u -d '35 days ago' +%Y-%m-%dT00:00:00Z 2>/dev/null || date -u -v-35d +%Y-%m-%dT00:00:00Z)\")|.tagName]|join(\", \")" 2>/dev/null || echo '?')."
 say ""
 
+# --- 2b. planned rows (ai-agents docs/plan/027-electric-fork-followups.md §R4) — the radar reports their triggers ----
+tdb="$(npmv @tanstack/db)"; pi="$(npmv @earendil-works/pi-agent-core)"
+say "## Planned rows (ai-agents plan 027 §R4)"
+say ""
+say "| Row | Trigger | Now |"
+say "| --- | --- | --- |"
+case "$tdb" in *-*|\?) ga="not yet (\`$tdb\`)" ;; *) ga="**MET** — \`$tdb\` is a final release: open R4b" ;; esac
+say "| R4b TanStack DB \`$(pin $R @tanstack/db)\` → 1.0 | 1.0 GA on npm | $ga |"
+say "| R4a Pi \`$(pin $R @earendil-works/pi-agent-core)\` → \`$pi\` | the owner ends focus mode | owner's call |"
+say ""
+
 # --- 3. advisories ---------------------------------------------------------------------------------------------------
 say "## Advisories"
 say ""
