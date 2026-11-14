@@ -122,45 +122,38 @@ export function useEntityTimeline(
     db && (db.collections as Record<string, unknown>).comments
   )
   const includeComments = commentsEnabled && (opts?.comments ?? true)
-  const { data: timelineRows = [] } = useLiveQuery(
-    (q) => {
-      if (!db) return undefined
-      return createEntityTimelineQuery(db, {
-        customSources: {
-          compaction: createCompactionTimelineSource(db),
-          ...(includeComments && {
-            comment: createCommentsTimelineSource(db),
-          }),
-        },
-      })(q)
-    },
-    [db, includeComments]
+  const { data: timelineRows = [] } = useLiveQuery((q) => {
+    if (!db) return undefined
+    return createEntityTimelineQuery(db, {
+      customSources: {
+        compaction: createCompactionTimelineSource(db),
+        ...(includeComments && {
+          comment: createCommentsTimelineSource(db),
+        }),
+      },
+    })(q)
+  })
+  const { data: manifests = [] } = useLiveQuery((q) =>
+    db
+      ? q
+          .from({ manifest: db.collections.manifests as any })
+          .orderBy(({ manifest }: any) => manifest._seq, `asc`)
+      : undefined
   )
-  const { data: manifests = [] } = useLiveQuery(
-    (q) =>
-      db
-        ? q
-            .from({ manifest: db.collections.manifests as any })
-            .orderBy(({ manifest }: any) => manifest._seq, `asc`)
-        : undefined,
-    [db]
-  )
-  const { data: pendingInboxRows = [] } = useLiveQuery(
-    (q) =>
-      db
-        ? q
-            .from({ inbox: db.collections.inbox as any })
-            .where(({ inbox }: any) => eq(inbox.status, `pending`))
-            .orderBy(
-              ({ inbox }: any) =>
-                coalesce(inbox._timeline_order, TIMELINE_ORDER_FALLBACK),
-              `asc`
-            )
-            .orderBy(({ inbox }: any) =>
-              coalesce(inbox._seq, Number.MAX_SAFE_INTEGER)
-            )
-        : undefined,
-    [db]
+  const { data: pendingInboxRows = [] } = useLiveQuery((q) =>
+    db
+      ? q
+          .from({ inbox: db.collections.inbox as any })
+          .where(({ inbox }: any) => eq(inbox.status, `pending`))
+          .orderBy(
+            ({ inbox }: any) =>
+              coalesce(inbox._timeline_order, TIMELINE_ORDER_FALLBACK),
+            `asc`
+          )
+          .orderBy(({ inbox }: any) =>
+            coalesce(inbox._seq, Number.MAX_SAFE_INTEGER)
+          )
+      : undefined
   )
   // Only a *completed* compaction checkpoint renders as a timeline marker;
   // `running`/`failed` checkpoints are surfaced by the live composer indicator

@@ -289,14 +289,12 @@ function buildStateProxy<T extends { key: string }>(
 }
 
 async function awaitPersisted(transaction: unknown): Promise<void> {
-  const promise = (
-    transaction as
-      | { isPersisted?: { promise?: Promise<unknown> } }
-      | null
-      | undefined
-  )?.isPersisted?.promise
-  if (promise) {
-    await promise
+  const tx = transaction as
+    | { when?: (state: `settled`) => Promise<unknown> }
+    | null
+    | undefined
+  if (typeof tx?.when === `function`) {
+    await tx.when(`settled`)
   }
 }
 

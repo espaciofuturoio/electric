@@ -274,15 +274,12 @@ function GenericChatBody({
   const [stopPending, setStopPending] = useState(false)
   const [selectedCommentTarget, setSelectedCommentTarget] =
     useState<SelectedCommentTarget | null>(null)
-  const { data: matchingEntityTypes = [] } = useLiveQuery(
-    (query) => {
-      if (!entityTypesCollection) return undefined
-      return query
-        .from({ t: entityTypesCollection })
-        .where(({ t }) => eq(t.name, entity.type))
-    },
-    [entityTypesCollection, entity.type]
-  )
+  const { data: matchingEntityTypes = [] } = useLiveQuery((query) => {
+    if (!entityTypesCollection) return undefined
+    return query
+      .from({ t: entityTypesCollection })
+      .where(({ t }) => eq(t.name, entity.type))
+  })
   const imageAttachmentsEnabled = schemaModelSupportsImageInput(
     matchingEntityTypes[0]?.creation_schema,
     entity.spawn_args
@@ -376,7 +373,7 @@ function GenericChatBody({
       signal: `SIGINT`,
       reason: `Stopped from chat UI`,
     })
-    tx.isPersisted.promise.catch(() => {
+    tx.when(`settled`).catch(() => {
       setStopPending(false)
     })
   }, [canSignal, entityUrl, generationActive, signalEntity, stopPending])

@@ -232,30 +232,26 @@ export function useCloudAgentServers(): CloudAgentServersResult {
       (query) => {
         if (!collections) return undefined
         return query.from({ s: collections.agentServers })
-      },
-      [collections]
-    )
+      }
+)
   const { data: environmentRows = [] } = useLiveQuery(
     (query) => {
       if (!collections) return undefined
       return query.from({ e: collections.environments })
-    },
-    [collections]
-  )
+    }
+)
   const { data: projectRows = [] } = useLiveQuery(
     (query) => {
       if (!collections) return undefined
       return query.from({ p: collections.projects })
-    },
-    [collections]
-  )
+    }
+)
   const { data: workspaceRows = [] } = useLiveQuery(
     (query) => {
       if (!collections) return undefined
       return query.from({ w: collections.workspaces })
-    },
-    [collections]
-  )
+    }
+)
 
   return useMemo<CloudAgentServersResult>(() => {
     if (!collections) {

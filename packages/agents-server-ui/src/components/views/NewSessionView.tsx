@@ -167,17 +167,14 @@ export function NewSessionView({
   const [workingDirectory, setWorkingDirectory] = useState<string | null>(null)
 
   const { data: entityTypes = [], isLoading: entityTypesLoading } =
-    useLiveQuery(
-      (query) => {
-        if (!entityTypesCollection) return undefined
-        return query
-          .from({ t: entityTypesCollection })
-          .where(({ t }) => not(eq(t.name, `worker`)))
-          .where(({ t }) => not(eq(t.name, `principal`)))
-          .orderBy(({ t }) => t.name, `asc`)
-      },
-      [entityTypesCollection]
-    )
+    useLiveQuery((query) => {
+      if (!entityTypesCollection) return undefined
+      return query
+        .from({ t: entityTypesCollection })
+        .where(({ t }) => not(eq(t.name, `worker`)))
+        .where(({ t }) => not(eq(t.name, `principal`)))
+        .orderBy(({ t }) => t.name, `asc`)
+    })
 
   const { data: enabledRunners = [], isLoading: runnersLoading } = useLiveQuery(
     (query) => {
@@ -187,8 +184,7 @@ export function NewSessionView({
         .where(({ r }) => eq(r.admin_status, `enabled`))
         .orderBy(({ r }) => r.updated_at, `desc`)
         .orderBy(({ r }) => r.label, `asc`)
-    },
-    [runnersCollection]
+    }
   )
 
   // The Electron shell registers its own pull-wake runner. When that
@@ -271,13 +267,10 @@ export function NewSessionView({
   // Recent working directories are derived from the synced sessions
   // dispatched to the selected runner (`spawn_args.workingDirectory`), so
   // the same per-runner list appears on every device — no local storage.
-  const { data: allEntities = [] } = useLiveQuery(
-    (query) => {
-      if (!entitiesCollection) return undefined
-      return query.from({ e: entitiesCollection })
-    },
-    [entitiesCollection]
-  )
+  const { data: allEntities = [] } = useLiveQuery((query) => {
+    if (!entitiesCollection) return undefined
+    return query.from({ e: entitiesCollection })
+  })
   const recentDirs = useMemo(
     () =>
       selectedRunnerId
@@ -390,7 +383,7 @@ export function NewSessionView({
       })
       const entityUrl = `/${typeName}/${name}`
       try {
-        await tx.isPersisted.promise
+        await tx.when(`settled`)
         if (hasInitialAttachments) {
           await sendEntityMessage({
             baseUrl,

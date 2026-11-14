@@ -54,9 +54,8 @@ export function useEntityPermissions(
       return query
         .from({ grant: entityEffectivePermissionsCollection })
         .where(({ grant }) => eq(grant.entity_url, entity.url))
-    },
-    [entityEffectivePermissionsCollection, entity?.url]
-  )
+    }
+)
 
   return useMemo(() => {
     const out = Object.fromEntries(

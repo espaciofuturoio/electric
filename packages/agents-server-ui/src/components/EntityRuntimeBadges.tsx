@@ -32,13 +32,10 @@ export function useEntityRuntimeInfo(entity: ElectricEntity): {
   sandboxKey: string | null
 } {
   const { runnersCollection } = useElectricAgents()
-  const { data: runners = [] } = useLiveQuery(
-    (q) => {
-      if (!runnersCollection) return undefined
-      return q.from({ r: runnersCollection })
-    },
-    [runnersCollection]
-  )
+  const { data: runners = [] } = useLiveQuery((q) => {
+    if (!runnersCollection) return undefined
+    return q.from({ r: runnersCollection })
+  })
 
   const runnerId = getEntityRunnerId(entity)
   const explicitProfile = entity.sandbox?.profile ?? null

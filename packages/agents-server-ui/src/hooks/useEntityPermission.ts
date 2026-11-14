@@ -27,15 +27,12 @@ export function useEntityPermission(
 ): boolean {
   const { entityEffectivePermissionsCollection } = useElectricAgents()
   const { principal } = useCurrentPrincipal()
-  const { data: grants = [] } = useLiveQuery(
-    (query) => {
-      if (!entityEffectivePermissionsCollection || !entity) return undefined
-      return query
-        .from({ grant: entityEffectivePermissionsCollection })
-        .where(({ grant }) => eq(grant.entity_url, entity.url))
-    },
-    [entityEffectivePermissionsCollection, entity?.url]
-  )
+  const { data: grants = [] } = useLiveQuery((query) => {
+    if (!entityEffectivePermissionsCollection || !entity) return undefined
+    return query
+      .from({ grant: entityEffectivePermissionsCollection })
+      .where(({ grant }) => eq(grant.entity_url, entity.url))
+  })
 
   return useMemo(() => {
     if (!entity) return false
@@ -53,15 +50,12 @@ export function useEntityPermissions(
 ): Record<EntityPermission, boolean> {
   const { entityEffectivePermissionsCollection } = useElectricAgents()
   const { principal } = useCurrentPrincipal()
-  const { data: grants = [] } = useLiveQuery(
-    (query) => {
-      if (!entityEffectivePermissionsCollection || !entity) return undefined
-      return query
-        .from({ grant: entityEffectivePermissionsCollection })
-        .where(({ grant }) => eq(grant.entity_url, entity.url))
-    },
-    [entityEffectivePermissionsCollection, entity?.url]
-  )
+  const { data: grants = [] } = useLiveQuery((query) => {
+    if (!entityEffectivePermissionsCollection || !entity) return undefined
+    return query
+      .from({ grant: entityEffectivePermissionsCollection })
+      .where(({ grant }) => eq(grant.entity_url, entity.url))
+  })
 
   return useMemo(() => {
     const out: Record<EntityPermission, boolean> = {

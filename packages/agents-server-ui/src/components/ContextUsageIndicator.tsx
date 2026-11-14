@@ -36,12 +36,10 @@ interface ContextUsageIndicatorProps {
 export function ContextUsageIndicator({
   db,
 }: ContextUsageIndicatorProps): React.ReactElement | null {
-  const { data: steps = [] } = useLiveQuery(
-    (q) =>
-      db && db.collections.steps
-        ? q.from({ step: db.collections.steps as any })
-        : undefined,
-    [db]
+  const { data: steps = [] } = useLiveQuery((q) =>
+    db && db.collections.steps
+      ? q.from({ step: db.collections.steps as any })
+      : undefined
   )
 
   const usage = useMemo(() => {

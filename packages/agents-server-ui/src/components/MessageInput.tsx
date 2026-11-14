@@ -159,14 +159,12 @@ export function MessageInput({
     if (isCommentMode) clearAttachments()
   }, [isCommentMode, clearAttachments])
 
-  const { data: slashCommands = [] } = useLiveQuery(
-    (q) =>
-      db
-        ? q
-            .from({ slashCommand: db.collections.slashCommands as any })
-            .orderBy(({ slashCommand }: any) => slashCommand.name, `asc`)
-        : undefined,
-    [db]
+  const { data: slashCommands = [] } = useLiveQuery((q) =>
+    db
+      ? q
+          .from({ slashCommand: db.collections.slashCommands as any })
+          .orderBy(({ slashCommand }: any) => slashCommand.name, `asc`)
+      : undefined
   )
   const effectiveSlashCommands = isCommentMode
     ? []
@@ -249,7 +247,7 @@ export function MessageInput({
         onSend?.()
         setValue(``)
         onClearCommentTarget?.()
-        tx.isPersisted.promise.catch((err: Error) => {
+        tx.when(`settled`).catch((err: Error) => {
           setError(err.message)
           setValue((current) => (current ? current : text))
         })
@@ -284,7 +282,7 @@ export function MessageInput({
       setValue(``)
       clearAttachments()
       setEditingMessage(null)
-      tx.isPersisted.promise.catch((err: Error) => {
+      tx.when(`settled`).catch((err: Error) => {
         setError(err.message)
         if (!editingMessage) {
           setValue((current) => (current ? current : text))
@@ -331,9 +329,11 @@ export function MessageInput({
         key: message.key,
         mode: `paused`,
         status: `pending`,
-      }).isPersisted.promise.catch((err: Error) => {
-        setError(err.message)
       })
+        .when(`settled`)
+        .catch((err: Error) => {
+          setError(err.message)
+        })
       setEditingMessage({ key: message.key, originalText: text })
       setValue(text)
     },
@@ -347,9 +347,11 @@ export function MessageInput({
         key: editingMessage.key,
         mode: `queued`,
         status: `pending`,
-      }).isPersisted.promise.catch((err: Error) => {
-        setError(err.message)
       })
+        .when(`settled`)
+        .catch((err: Error) => {
+          setError(err.message)
+        })
     }
     setEditingMessage(null)
     setValue(``)
@@ -361,9 +363,11 @@ export function MessageInput({
       if (inputDisabled) return
       if (!deleteAction) return
       setError(null)
-      deleteAction({ key }).isPersisted.promise.catch((err: Error) => {
-        setError(err.message)
-      })
+      deleteAction({ key })
+        .when(`settled`)
+        .catch((err: Error) => {
+          setError(err.message)
+        })
       if (editingMessage?.key === key) cancelEditing()
     },
     [deleteAction, inputDisabled, editingMessage?.key, cancelEditing]
@@ -374,9 +378,11 @@ export function MessageInput({
       if (inputDisabled) return
       if (!steerAction) return
       setError(null)
-      steerAction({ key }).isPersisted.promise.catch((err: Error) => {
-        setError(err.message)
-      })
+      steerAction({ key })
+        .when(`settled`)
+        .catch((err: Error) => {
+          setError(err.message)
+        })
       if (editingMessage?.key === key) cancelEditing()
     },
     [steerAction, inputDisabled, editingMessage?.key, cancelEditing]
@@ -386,11 +392,11 @@ export function MessageInput({
       if (inputDisabled) return
       if (!updateAction) return
       setError(null)
-      updateAction({ key, position }).isPersisted.promise.catch(
-        (err: Error) => {
+      updateAction({ key, position })
+        .when(`settled`)
+        .catch((err: Error) => {
           setError(err.message)
-        }
-      )
+        })
     },
     [inputDisabled, updateAction]
   )

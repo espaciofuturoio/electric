@@ -112,9 +112,8 @@ export function SessionListScreen({
       q
         .from({ entity: entitiesCollection })
         .where(({ entity }) => not(eq(entity.type, `principal`)))
-        .orderBy(({ entity }) => entity.updated_at, `desc`),
-    [entitiesCollection]
-  )
+        .orderBy(({ entity }) => entity.updated_at, `desc`)
+)
 
   const menuEntity = useMemo(() => {
     if (!menuSnapshot) return null

@@ -654,7 +654,7 @@ export function createEntityStreamDB(
         return
       }
       tracked = true
-      trackPersistencePromise(transaction.isPersisted.promise, debugOrigin)
+      trackPersistencePromise(transaction.when(`settled`), debugOrigin)
     }
 
     const trackedTransaction = transaction as EntityWriteTransaction & {
@@ -857,11 +857,16 @@ export function createEntityStreamDB(
       const transaction = (actionFn as (...a: Array<unknown>) => unknown)(
         ...args
       )
-      const persistence = (
-        transaction as { isPersisted?: { promise?: Promise<unknown> } } | null
-      )?.isPersisted?.promise
-      if (persistence) {
-        trackPersistencePromise(persistence, `action:${actionName}`)
+      const when = (
+        transaction as {
+          when?: (state: `settled`) => Promise<unknown>
+        } | null
+      )?.when
+      if (typeof when === `function`) {
+        trackPersistencePromise(
+          when.call(transaction, `settled`),
+          `action:${actionName}`
+        )
       }
       return transaction
     }) as typeof actionFn

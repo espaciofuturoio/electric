@@ -149,15 +149,12 @@ function RootShell(): React.ReactElement {
   const nativeMenuHandlesAppHotkeys =
     typeof window !== `undefined` && Boolean(window.electronAPI)
   const activeEntityUrl = helpers.activeTile?.entityUrl ?? null
-  const { data: activeEntityMatches = [] } = useLiveQuery(
-    (q) => {
-      if (!entitiesCollection || !activeEntityUrl) return undefined
-      return q
-        .from({ entity: entitiesCollection })
-        .where(({ entity }) => eq(entity.url, activeEntityUrl))
-    },
-    [entitiesCollection, activeEntityUrl]
-  )
+  const { data: activeEntityMatches = [] } = useLiveQuery((q) => {
+    if (!entitiesCollection || !activeEntityUrl) return undefined
+    return q
+      .from({ entity: entitiesCollection })
+      .where(({ entity }) => eq(entity.url, activeEntityUrl))
+  })
   const activeEntity = activeEntityMatches.at(0)
   const activeEntityCanSignal = useEntityPermission(activeEntity, `signal`)
   const activeEntityCanReceiveSignal =
@@ -232,7 +229,7 @@ function RootShell(): React.ReactElement {
       const entityUrl = activeEntityUrl
       if (!entityUrl || !signalEntity) return false
       const tx = signalEntity({ entityUrl, signal, reason })
-      tx.isPersisted.promise.catch(() => {})
+      tx.when(`settled`).catch(() => {})
       return true
     },
     [activeEntityCanReceiveSignal, activeEntityUrl, signalEntity]
@@ -246,14 +243,15 @@ function RootShell(): React.ReactElement {
       signal: `SIGSTOP`,
       reason: `Stopped immediately from keyboard`,
     })
-    stopTx.isPersisted.promise
+    stopTx
+      .when(`settled`)
       .then(() => {
         const interruptTx = signalEntity({
           entityUrl,
           signal: `SIGINT`,
           reason: `Interrupted current run for immediate stop`,
         })
-        interruptTx.isPersisted.promise.catch(() => {})
+        interruptTx.when(`settled`).catch(() => {})
       })
       .catch(() => {})
     return true

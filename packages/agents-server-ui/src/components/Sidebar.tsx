@@ -214,34 +214,28 @@ export function Sidebar({
     [currentPrincipal]
   )
 
-  const { data: visibleEntities = [] } = useLiveQuery(
-    (query) => {
-      if (!entitiesCollection) return undefined
-      let builder = query
-        .from({ e: entitiesCollection })
-        .where(({ e }) => not(eq(e.type, `principal`)))
+  const { data: visibleEntities = [] } = useLiveQuery((query) => {
+    if (!entitiesCollection) return undefined
+    let builder = query
+      .from({ e: entitiesCollection })
+      .where(({ e }) => not(eq(e.type, `principal`)))
 
-      for (const type of view.hiddenTypes) {
-        builder = builder.where(({ e }) => not(eq(e.type, type)))
-      }
-      for (const status of view.hiddenStatuses) {
-        builder = builder.where(({ e }) => not(eq(e.status, status)))
-      }
+    for (const type of view.hiddenTypes) {
+      builder = builder.where(({ e }) => not(eq(e.type, type)))
+    }
+    for (const status of view.hiddenStatuses) {
+      builder = builder.where(({ e }) => not(eq(e.status, status)))
+    }
 
-      return builder.orderBy(({ e }) => e.updated_at, `desc`)
-    },
-    [entitiesCollection, view.hiddenTypes, view.hiddenStatuses]
-  )
+    return builder.orderBy(({ e }) => e.updated_at, `desc`)
+  })
 
   // Runner id → display label, for both the runner grouping and the
   // "Show > Runner" filter. Resolved from the runners collection.
-  const { data: runners = [] } = useLiveQuery(
-    (q) => {
-      if (!runnersCollection) return undefined
-      return q.from({ r: runnersCollection })
-    },
-    [runnersCollection]
-  )
+  const { data: runners = [] } = useLiveQuery((q) => {
+    if (!runnersCollection) return undefined
+    return q.from({ r: runnersCollection })
+  })
   const runnerLabelById = useMemo(() => {
     const map = new Map<string, string>()
     for (const r of runners) map.set(r.id, r.label || r.id)

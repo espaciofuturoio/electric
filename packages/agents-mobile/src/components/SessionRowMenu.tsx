@@ -97,9 +97,8 @@ function EntityInfo({
   // web's `useEntityRuntimeInfo` reads its own provider context, so
   // mobile queries its runners collection directly).
   const { data: runners = [] } = useLiveQuery(
-    (q) => q.from({ r: runnersCollection }),
-    [runnersCollection]
-  )
+    (q) => q.from({ r: runnersCollection })
+)
 
   const runnerId = getEntityRunnerId(entity)
   const runner = resolveRunner(runners, runnerId)

@@ -351,13 +351,10 @@ function usePrincipalDisplay(value: string | null | undefined): {
   const currentKey = principalKeyFromInput(currentPrincipal)
   const userId = userIdFromPrincipal(value)
 
-  const { data: users = [] } = useLiveQuery(
-    (q) => {
-      if (!usersCollection) return undefined
-      return q.from({ user: usersCollection })
-    },
-    [usersCollection]
-  )
+  const { data: users = [] } = useLiveQuery((q) => {
+    if (!usersCollection) return undefined
+    return q.from({ user: usersCollection })
+  })
 
   const usersById = useMemo(
     () => new Map(users.map((user) => [user.id, user])),

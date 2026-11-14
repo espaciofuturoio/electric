@@ -223,12 +223,10 @@ function EntityHost({
   bottomInset?: number
 }): ReactElement {
   const { entitiesCollection } = useElectricAgents()
-  const { data: matches = [], isLoading } = useLiveQuery(
-    (query) =>
-      query
-        .from({ entity: entitiesCollection! })
-        .where(({ entity }) => eq(entity.url, entityUrl)),
-    [entitiesCollection, entityUrl]
+  const { data: matches = [], isLoading } = useLiveQuery((query) =>
+    query
+      .from({ entity: entitiesCollection! })
+      .where(({ entity }) => eq(entity.url, entityUrl))
   )
   const entity = matches.at(0) ?? null
 

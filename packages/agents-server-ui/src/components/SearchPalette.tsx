@@ -136,35 +136,29 @@ export function SearchPalette(): React.ReactElement | null {
   const [highlight, setHighlight] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const { data: entities = [] } = useLiveQuery(
-    (q) => {
-      if (!entitiesCollection) return undefined
-      return q
-        .from({ e: entitiesCollection })
-        .orderBy(({ e }) => e.updated_at, `desc`)
-        .select(({ e }) => ({
-          url: e.url,
-          type: e.type,
-          status: e.status,
-          tags: e.tags,
-          spawn_args: e.spawn_args,
-          parent: e.parent,
-        }))
-    },
-    [entitiesCollection]
-  )
+  const { data: entities = [] } = useLiveQuery((q) => {
+    if (!entitiesCollection) return undefined
+    return q
+      .from({ e: entitiesCollection })
+      .orderBy(({ e }) => e.updated_at, `desc`)
+      .select(({ e }) => ({
+        url: e.url,
+        type: e.type,
+        status: e.status,
+        tags: e.tags,
+        spawn_args: e.spawn_args,
+        parent: e.parent,
+      }))
+  })
 
   const tiles = useMemo(() => listTiles(workspace.root), [workspace.root])
   const activeTile = helpers.activeTile
-  const { data: activeEntityMatches = [] } = useLiveQuery(
-    (q) => {
-      if (!entitiesCollection || !activeTile?.entityUrl) return undefined
-      return q
-        .from({ e: entitiesCollection })
-        .where(({ e }) => eq(e.url, activeTile.entityUrl))
-    },
-    [entitiesCollection, activeTile?.entityUrl]
-  )
+  const { data: activeEntityMatches = [] } = useLiveQuery((q) => {
+    if (!entitiesCollection || !activeTile?.entityUrl) return undefined
+    return q
+      .from({ e: entitiesCollection })
+      .where(({ e }) => eq(e.url, activeTile.entityUrl))
+  })
   const activeEntity = activeEntityMatches.at(0) ?? undefined
   const activeEntityPermissions = useEntityPermissions(
     activeEntity,
@@ -384,7 +378,7 @@ export function SearchPalette(): React.ReactElement | null {
               return false
             }
             const tx = killEntity(activeTile.entityUrl)
-            tx.isPersisted.promise.catch(() => {})
+            tx.when(`settled`).catch(() => {})
           },
         })
       }

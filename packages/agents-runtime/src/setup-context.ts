@@ -496,7 +496,7 @@ export function createSetupContext(
 
     const createResolvedMutationResult = () => {
       return {
-        isPersisted: { promise: Promise.resolve() },
+        when: (_state: `settled`) => Promise.resolve(),
         state: `completed`,
         mutations: [],
       }
