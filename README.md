@@ -7,7 +7,7 @@ Our own agent runtime on top of Electric; how we keep it current: [FORK.md](FORK
 | --- | --- | --- |
 | Coordinator `@electric-ax/agents-server` | 0.6.4 + fork patches | 0.6.4 (npm) |
 | Runtime `@electric-ax/agents-runtime` | 0.6.3 + fork patches | 0.6.3 (npm) |
-| Sync service `@core/sync-service` | 1.8.1 | 1.8.1 (neondatabase/electric) |
+| Sync service `@core/sync-service` | 1.8.2 | 1.8.1 (neondatabase/electric) |
 | Elixir | 1.20.5 | 1.20.5 (newest 1.20.x) |
 | Erlang/OTP | 29.1.2 | 29.1.2 (newest 29.x) |
 | Node (coordinator base `node:22-bookworm-slim`, rebuilt weekly) | 22 | 22.23.5 |
