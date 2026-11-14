@@ -445,7 +445,7 @@ export function createSetupContext(
       delete clone.$collectionId
       delete clone.$key
       delete clone.$origin
-      delete clone.$synced
+      delete clone.$hasPendingWrites
       return clone
     }
 
