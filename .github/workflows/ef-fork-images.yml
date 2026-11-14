@@ -1,0 +1,194 @@
+name: ef fork images
+
+# Builds the two images our agents stacks run from ONE commit of this fork's `main` line, pushes them to GHCR,
+# smoke-tests them together and records their digests in a GitHub release. Consumers pin by digest (FORK.md).
+#   coordinator: ghcr.io/espaciofuturoio/electric-agents-server:<agents-server version>-fork.<sha9>
+#   sync:        ghcr.io/espaciofuturoio/electric-sync-service:<sync-service version>-fork.<sha9>
+# The `ef/sync-service` line (`<version>-ef.<n>` tags) has its own workflow; the two tag schemes never collide.
+# A tag that already exists is never overwritten: rerun with a new commit instead.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Commit of this fork to build (full or short sha); empty = the dispatching commit'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  COORDINATOR_IMAGE: ghcr.io/espaciofuturoio/electric-agents-server
+  SYNC_IMAGE: ghcr.io/espaciofuturoio/electric-sync-service
+
+jobs:
+  vars:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.v.outputs.sha }}
+      coordinator_tag: ${{ steps.v.outputs.coordinator_tag }}
+      sync_tag: ${{ steps.v.outputs.sync_tag }}
+      sync_version: ${{ steps.v.outputs.sync_version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+      - name: Derive tags
+        id: v
+        run: |
+          sha=$(git rev-parse HEAD); short=$(git rev-parse --short=9 HEAD)
+          agents=$(jq -r .version packages/agents-server/package.json)
+          sync=$(jq -r .version packages/sync-service/package.json)
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "coordinator_tag=${agents}-fork.${short}" >> "$GITHUB_OUTPUT"
+          echo "sync_tag=${sync}-fork.${short}" >> "$GITHUB_OUTPUT"
+          echo "sync_version=${sync}" >> "$GITHUB_OUTPUT"
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Refuse to overwrite a published tag
+        env:
+          C: ${{ env.COORDINATOR_IMAGE }}:${{ steps.v.outputs.coordinator_tag }}
+          S: ${{ env.SYNC_IMAGE }}:${{ steps.v.outputs.sync_tag }}
+        run: |
+          for ref in "$C" "$S"; do
+            if docker manifest inspect "$ref" >/dev/null 2>&1; then echo "::error::$ref already exists"; exit 1; fi
+          done
+
+  coordinator:
+    needs: vars
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.vars.outputs.sha }}
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push the coordinator
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: packages/agents-server/Dockerfile
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          tags: ${{ env.COORDINATOR_IMAGE }}:${{ needs.vars.outputs.coordinator_tag }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/espaciofuturoio/electric
+            org.opencontainers.image.revision=${{ needs.vars.outputs.sha }}
+            org.opencontainers.image.version=${{ needs.vars.outputs.coordinator_tag }}
+
+  sync:
+    needs: vars
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.vars.outputs.sha }}
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push the sync service
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: packages/sync-service
+          file: packages/sync-service/Dockerfile
+          build-contexts: |
+            electric-telemetry=packages/electric-telemetry
+          build-args: |
+            ELECTRIC_VERSION=${{ needs.vars.outputs.sync_version }}
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          tags: ${{ env.SYNC_IMAGE }}:${{ needs.vars.outputs.sync_tag }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/espaciofuturoio/electric
+            org.opencontainers.image.revision=${{ needs.vars.outputs.sha }}
+            org.opencontainers.image.version=${{ needs.vars.outputs.sync_tag }}
+
+  # The stack our boxes run: postgres:18-alpine + sync + coordinator, pulled BY DIGEST from GHCR.
+  smoke:
+    needs: [vars, coordinator, sync]
+    runs-on: ubuntu-latest
+    env:
+      C: ghcr.io/espaciofuturoio/electric-agents-server@${{ needs.coordinator.outputs.digest }}
+      S: ghcr.io/espaciofuturoio/electric-sync-service@${{ needs.sync.outputs.digest }}
+    steps:
+      - name: Postgres 18 with logical replication
+        run: |
+          docker network create smoke
+          docker run -d --name pg --network smoke -e POSTGRES_USER=ea -e POSTGRES_PASSWORD=pw -e POSTGRES_DB=ea \
+            postgres:18-alpine -c wal_level=logical -c max_connections=300
+          for i in $(seq 1 30); do docker exec pg pg_isready -U ea -d ea && break; sleep 1; done
+      - name: Sync service is up and reports its version
+        run: |
+          docker run -d --name electric --network smoke -e DATABASE_URL=postgres://ea:pw@pg:5432/ea \
+            -e ELECTRIC_INSECURE=true "$S"
+          for i in $(seq 1 60); do docker exec electric curl -fs localhost:3000/v1/health | grep -q active && break; sleep 2; done
+          docker exec electric curl -fs localhost:3000/v1/health
+          docker exec electric /app/bin/entrypoint version
+      - name: Coordinator registers a type and spawns an entity
+        run: |
+          start_coordinator() {
+            docker run -d --name coordinator --network smoke -p 4437:4437 \
+              -e DATABASE_URL=postgres://ea:pw@pg:5432/ea -e ELECTRIC_AGENTS_ELECTRIC_URL=http://electric:3000 \
+              -e ELECTRIC_AGENTS_HOST=0.0.0.0 -e ELECTRIC_AGENTS_PORT=4437 \
+              -e ELECTRIC_AGENTS_BASE_URL=http://127.0.0.1:4437 \
+              -e ELECTRIC_AGENTS_STREAMS_DATA_DIR=/var/lib/electric-agents/streams \
+              -v streams:/var/lib/electric-agents/streams "$C"
+            for i in $(seq 1 60); do curl -fs localhost:4437/_electric/health | grep -q ok && return 0; sleep 2; done
+            docker logs coordinator; return 1
+          }
+          start_coordinator
+          code=$(curl -s -o /tmp/r -w '%{http_code}' -X POST localhost:4437/_electric/entity-types \
+            -H 'content-type: application/json' -d '{"name":"smoke","description":"ef fork images smoke"}')
+          cat /tmp/r; echo; [ "$code" = 201 ]
+          code=$(curl -s -o /tmp/r -w '%{http_code}' -X PUT localhost:4437/smoke/one -H 'content-type: application/json' -d '{}')
+          cat /tmp/r; echo; [ "${code:0:1}" = 2 ]
+          # A restart keeps what Postgres and the streams volume hold.
+          docker rm -f coordinator && start_coordinator
+          curl -fs localhost:4437/_electric/entity-types | tee /tmp/r; echo; grep -q '"smoke"' /tmp/r
+      - name: Logs on failure
+        if: failure()
+        run: docker logs electric || true; docker logs coordinator || true
+
+  release:
+    needs: [vars, coordinator, sync, smoke]
+    runs-on: ubuntu-latest
+    steps:
+      - name: GitHub release with the digests
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHA: ${{ needs.vars.outputs.sha }}
+          CT: ${{ needs.vars.outputs.coordinator_tag }}
+          ST: ${{ needs.vars.outputs.sync_tag }}
+          CD: ${{ needs.coordinator.outputs.digest }}
+          SD: ${{ needs.sync.outputs.digest }}
+        run: |
+          notes=$(printf '%s\n' \
+            "Built from \`${SHA}\` by run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}." \
+            "" \
+            "| image | pin |" "|---|---|" \
+            "| coordinator | \`${COORDINATOR_IMAGE}:${CT}@${CD}\` |" \
+            "| sync | \`${SYNC_IMAGE}:${ST}@${SD}\` |" \
+            "" \
+            "Smoke passed: postgres:18-alpine + sync + coordinator by digest; type registered, entity spawned, restart kept the type.")
+          echo "$notes" >> "$GITHUB_STEP_SUMMARY"
+          gh release create "images-${CT}" -R "$GITHUB_REPOSITORY" --target "$SHA" --title "images ${CT}" --notes "$notes"
