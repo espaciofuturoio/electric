@@ -47,14 +47,7 @@ jobs:
         run: |
           month="$(date -u +%Y-%m)"; report="$RUNNER_TEMP/radar.md"; pr=""
           if [ -n "$BRANCH" ]; then
-            key="$RUNNER_TEMP/ef_radar_key"; printf '%s\n' "$DEPLOY_KEY" > "$key"; chmod 600 "$key"
-            GIT_SSH_COMMAND="ssh -i $key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" \
-              git push -q -f "git@github.com:${GITHUB_REPOSITORY}.git" "$BRANCH"
-            rm -f "$key"
-            pr="$(gh pr list --head "$BRANCH" --json url -q '.[0].url')"
-            [ -n "$pr" ] || pr="$(gh pr create --base main --head "$BRANCH" --label ef \
-              --title "ef: upstream neondatabase/electric ($month)" --body-file "$report")"
-            gh workflow run ef-tests.yml --ref "$BRANCH"
+            pr="$(.github/ef/bot-pr.sh "$BRANCH" "ef: upstream neondatabase/electric ($month)" "$report")"
           fi
           { cat "$report"; echo; [ -n "$pr" ] && echo "Upstream PR: $pr (merge as a merge commit once \`ef tests\` is green)."; } > "$RUNNER_TEMP/issue.md"
           gh issue create --title "Fork radar $month" --label ef --body-file "$RUNNER_TEMP/issue.md"

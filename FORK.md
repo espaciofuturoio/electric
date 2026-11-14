@@ -74,8 +74,10 @@ A standing practice, not a one-off. Every piece runs from this repo's Actions; e
 | weekly + push | `ef-versions.yml` (`.github/ef/versions.sh`) | The README table: this fork vs newest upstream / published for each key piece. PR, auto-merge. | Disable; the table just stops refreshing. |
 | monthly (1st) | `ef-radar.yml` (`.github/ef/radar.sh`) | Merges neondatabase/electric `main` into `ef/upstream-<YYYY-MM>` (or cherry-picks with a conflict note naming each skipped commit and its files), opens the PR (a person merges it as a MERGE commit), runs `ef tests` on it, and opens the issue «Fork radar <YYYY-MM>» with Pi (earendil-works/pi: pi-agent-core, pi-ai, pi-durable), Durable Streams, TanStack DB versions and the advisories (upstream GHSA, OSV over the Hex lock, `pnpm audit` over the coordinator's packages). | Disable; close the PR and delete the branch. |
 
-Bots open PRs with `GITHUB_TOKEN`, which does not trigger `pull_request`: each one dispatches `ef-tests.yml` on its
-branch, so the required checks land on the PR's head commit.
+Bots open their PRs through `.github/ef/bot-pr.sh`: the branch is pushed with the write deploy key (a `GITHUB_TOKEN`
+push triggers nothing and may not touch workflow files), and the `pull_request` run of `ef tests`, which waits in
+`action_required` on a bot PR, is approved — a `workflow_dispatch` run does not satisfy a PR's required checks.
+Settings → Actions → «Allow GitHub Actions to create and approve pull requests» is on for this.
 
 Repo settings changed 2026-11-14 (all reversible in Settings): issues, auto-merge and merge commits enabled;
 Dependabot alerts and security updates enabled; a write deploy key `ef-radar` (private half only in the secret

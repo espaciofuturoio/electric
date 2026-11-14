@@ -33,12 +33,11 @@ jobs:
         if: steps.bump.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          DEPLOY_KEY: ${{ secrets.EF_RADAR_DEPLOY_KEY }}
           SUMMARY: ${{ steps.bump.outputs.summary }}
         run: |
           branch="ef/base-images-$(date -u +%Y%m%d)"
           git config user.name "ef-bot"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git switch -c "$branch"; git commit -qam "ef: sync image base — $SUMMARY"; git push -q -f origin "$branch"
-          url="$(gh pr create --base main --head "$branch" --label ef --title "ef: sync image base — $SUMMARY" \
-            --body "Patch-level base bump by ef-base-images.yml (same Elixir minor, OTP major, Debian bookworm). Auto-merges when \`ef tests\` is green. Rollback: revert.")"
-          gh workflow run ef-tests.yml --ref "$branch"
-          gh pr merge --auto --squash "$url"
+          git switch -c "$branch"; git commit -qam "ef: sync image base — $SUMMARY"
+          echo "Patch-level base bump by ef-base-images.yml (same Elixir minor, OTP major, Debian bookworm). Auto-merges when \`ef tests\` is green. Rollback: revert." > "$RUNNER_TEMP/body.md"
+          .github/ef/bot-pr.sh "$branch" "ef: sync image base — $SUMMARY" "$RUNNER_TEMP/body.md" --auto
