@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: 'Commit of this fork to build (full or short sha); empty = the dispatching commit'
+        description: 'Commit of this fork to build (FULL 40-char sha; a short one fails at checkout); empty = the dispatching commit'
         required: false
         type: string
 
@@ -131,19 +131,21 @@ jobs:
       C: ghcr.io/espaciofuturoio/electric-agents-server@${{ needs.coordinator.outputs.digest }}
       S: ghcr.io/espaciofuturoio/electric-sync-service@${{ needs.sync.outputs.digest }}
     steps:
-      - name: Postgres 18 with logical replication
+      - name: Postgres 18.7 with logical replication
         run: |
           docker network create smoke
           docker run -d --name pg --network smoke -e POSTGRES_USER=ea -e POSTGRES_PASSWORD=pw -e POSTGRES_DB=ea \
-            postgres:18-alpine -c wal_level=logical -c max_connections=300
+            postgres:18.7-alpine -c wal_level=logical -c max_connections=300
           for i in $(seq 1 30); do docker exec pg pg_isready -U ea -d ea && break; sleep 1; done
       - name: Sync service is up and reports its version
         run: |
           docker run -d --name electric --network smoke -e DATABASE_URL=postgres://ea:pw@pg:5432/ea \
-            -e ELECTRIC_INSECURE=true "$S"
+            -e ELECTRIC_INSECURE=true -e ELECTRIC_LIVE_DASHBOARD_PORT=4000 "$S"
           for i in $(seq 1 60); do docker exec electric curl -fs localhost:3000/v1/health | grep -q active && break; sleep 2; done
           docker exec electric curl -fs localhost:3000/v1/health
           docker exec electric /app/bin/entrypoint version
+          # The LiveDashboard our boxes put behind Caddy (fork knob) renders.
+          docker exec electric curl -fsL localhost:4000/ | grep -q 'Phoenix LiveDashboard'
       - name: Coordinator registers a type and spawns an entity
         run: |
           start_coordinator() {
@@ -189,6 +191,6 @@ jobs:
             "| coordinator | \`${COORDINATOR_IMAGE}:${CT}@${CD}\` |" \
             "| sync | \`${SYNC_IMAGE}:${ST}@${SD}\` |" \
             "" \
-            "Smoke passed: postgres:18-alpine + sync + coordinator by digest; type registered, entity spawned, restart kept the type.")
+            "Smoke passed: postgres:18.7-alpine + sync (LiveDashboard renders) + coordinator by digest; type registered, entity spawned, restart kept the type.")
           echo "$notes" >> "$GITHUB_STEP_SUMMARY"
           gh release create "images-${CT}" -R "$GITHUB_REPOSITORY" --target "$SHA" --title "images ${CT}" --notes "$notes"

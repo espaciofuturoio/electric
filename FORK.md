@@ -25,3 +25,38 @@ Consumers pin `image@sha256:<digest>` (the tag beside it is only for people). A 
 Before 2026-11-14 the coordinator image existed only as `electricax/agents-server:0.6.4-fork.d3cd4eb73-amd64`, built on
 a laptop and `docker load`ed onto three boxes; the sync image as `electricsql/electric:1.8.1-fork.c1f73b5fc-amd64`.
 Those local tags stay on the boxes as the rollback target until the GHCR pins have run a week.
+
+## Security review 2026-11-14
+
+Sources read: electric-sql/electric security advisories and its 113 open PRs; `pnpm audit --prod` filtered to what the
+coordinator image ships (`agents-server`, `agents-runtime`, `agents-mcp`, `agents-server-ui`, `typescript-client`);
+OSV for every Hex package in `packages/sync-service/mix.lock`; erlang/otp and elixir-lang/elixir advisories;
+postgresql.org/support/security; nodejs.org release index.
+
+**Tests:** sync-service suite on Postgres 18.7, OTP 29.1.2: 2342/2348; the 6 were 3 flaky (pass on `--failed`) and 3
+that fail identically on unpatched `main` in a local Docker network (hardcoded port 54321, IPv4 fallback). The
+coordinator is proven by `ef-fork-images.yml`'s smoke on the new images.
+
+**Applied here**
+
+| Where | Change | Advisories closed |
+| --- | --- | --- |
+| sync-service `mix.lock` | bandit 1.12.0→1.14.1, plug 1.19.2→1.20.3, phoenix 1.8.7→1.8.16, phoenix_live_view 1.1.31→1.2.13, phoenix_html →4.4.0, postgrex 0.22.2→0.22.4, ecto →3.14.3, plug_crypto →2.2.1, hpax →1.1.0, decimal →3.2.0, mint →1.11.0 (test only), with their deps | 16 bandit (HTTP/1, HTTP/2, WebSocket DoS; Host/port spoofing), 4 plug (param-decoding DoS, multipart, cookie injection), 2 phoenix (channel-join DoS), LiveView open redirect, phoenix_html attribute injection, 2 postgrex SQL injection (Notifications reconnect, `:comment`), ecto query-cache growth, plug_crypto secret in stack traces, hpax HPACK DoS, decimal DoS |
+| sync-service image | Elixir 1.20.2→1.20.5, OTP 29.0.2→29.1.2, Debian bookworm-20260623→20261104 | erts inet TCP driver length overflow (CVE-2026-75538, high), TLS 1.3 client skips server auth on unsolicited PSK (CVE-2026-89422, critical), TLS ticket store poisoning (CVE-2026-94200), Elixir URI/JSON parsing DoS, OS packages (OpenSSL) |
+| coordinator (`pnpm.overrides`) | fast-uri ≥3.1.9, @fastify/busboy ≥3.2.5, @modelcontextprotocol/sdk ≥1.32.2, dompurify ≥3.4.17, mermaid ≥11.16.1 (11.x), uuid ≥11.1.1, prosemirror-view 1.42.9 | 13 fast-uri (host confusion / SSRF in ajv's URI handling), 3 busboy multipart DoS / CRLF, 6 MCP SDK (body-size DoS, cross-origin redirects, token audience), console XSS in mermaid / dompurify / prosemirror-view |
+| image smoke | Postgres 18.7 (18.6 had ~30 CVEs, mostly authenticated-user code execution) and a LiveDashboard render check | — |
+
+**Not applied, and why**
+
+- `protobuf` ≥0.16.1 (recursion DoS decoding protobuf/JSON): only `otel_metric_exporter` uses it, to ENCODE metrics
+  for an OTLP endpoint no stack configures; upstream pins `~> 0.13.0, override: true` because ≥0.14 clashes with Protox
+  (pg_query_ex). Revisit when that pin can move.
+- coordinator UI `zod` 3.x (GHSA-mrhx-c7xc-m3w5) and `katex` (GHSA-238p, low, needs a prior prototype pollution):
+  browser-only in the operator console; zod 4 / katex 0.18 are major moves for a self-DoS. Renovate will raise them.
+- `ssl_verify_fun` 1.1.7 (wildcard across labels): not in the prod release (`mix deps.update` refuses it in `prod`).
+- vite / vitest / undici / jsdom advisories: test tooling (`agents-server-conformance-tests`), not in any image.
+- Upstream open PRs: none is a security fix for sync or agents. Robustness fixes worth a later cherry-pick (radar):
+  #4711 (terminate serves whose clients stop reading), #4838/#4837 (SSE), #4685 (non-English PG errors). Agents
+  wake-path PRs #4720/#4726/#4632 overlap our own fixes #2–#10 and need a dedicated card. #4853/#4854 (hono) only
+  touch examples and the desktop app.
+- Upstream advisories GHSA-m4f6 (1.7.12), GHSA-c82q (1.6.10), GHSA-h5rg (1.5.0): already in the 1.8.1 base.

@@ -41,6 +41,15 @@
   "pnpm": {
     "patchedDependencies": {
       "@microsoft/fetch-event-source": "patches/@microsoft__fetch-event-source.patch"
+    },
+    "overrides": {
+      "fast-uri@<3.1.9": "^3.1.9",
+      "@fastify/busboy@>=3.0.0 <3.2.2": "^3.2.5",
+      "@modelcontextprotocol/sdk@<1.32.0": "^1.32.2",
+      "dompurify@<3.4.17": "^3.4.17",
+      "mermaid@>=11.0.0 <11.16.1": "^11.16.1",
+      "uuid@>=11.0.0 <11.1.1": "^11.1.1",
+      "prosemirror-view@<1.42.3": "^1.42.9"
     }
   }
 }
