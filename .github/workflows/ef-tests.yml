@@ -1,0 +1,106 @@
+name: ef tests
+
+# The fork's own test gate (FORK.md § CI). Upstream's suites run on `blacksmith-*` runners this fork does not have, so
+# they never ran here; these jobs run the same suites on GitHub's runners, against what we ship: Postgres 18 (the minor
+# our boxes pin) and, for the coordinator, our own sync image by digest. Branch protection on `main` requires both
+# jobs; Dependabot / base-image / radar PRs auto-merge only when they are green.
+#
+# A PR opened by GITHUB_TOKEN does not trigger `pull_request`: the bots that open PRs dispatch this workflow on their
+# branch instead (`workflow_dispatch`), and the check lands on the same head commit.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '17 6 * * 1' # weekly, Monday 06:17 UTC: catches a moved base image or registry even without commits
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ef-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  POSTGRES_IMAGE: postgres:18.7-alpine@sha256:75dcac3dfb1cd01ca3536910bbc84128759362f8b118bf8c55b38a94f68f3b73
+  # Our sync image the coordinator tests run against (ef-base-images.yml raises it with each weekly rebuild).
+  EF_SYNC_IMAGE: ghcr.io/espaciofuturoio/electric-sync-service:1.8.1-fork.d3cd4eb73@sha256:225eca744c614ce9eb145654aab4c098cc5b6ba64613e1f0699911578b8877f9
+
+jobs:
+  sync-service:
+    name: sync-service (pg18)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: packages/sync-service
+    env:
+      MIX_ENV: test
+      MIX_TARGET: application
+      POSTGRES_VERSION: '180000'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Postgres 18 (logical) on :54321 and pgbouncer on :65432, as .env.test expects
+        working-directory: .
+        run: |
+          docker network create pg
+          docker run -d --name pg --network pg -p 54321:5432 -e POSTGRES_PASSWORD=password "$POSTGRES_IMAGE" \
+            -c wal_level=logical -c max_replication_slots=100 -c max_wal_senders=100 -c max_connections=1000
+          for i in $(seq 1 30); do docker exec pg pg_isready -U postgres && break; sleep 1; done; sleep 2
+          docker exec -i pg psql -U postgres -q < packages/sync-service/dev/init.sql
+          docker run -d --name pgb --network pg -p 65432:6432 -e PGBOUNCER_AUTH_TYPE=trust -e PGBOUNCER_DATABASE='*' \
+            -e PGBOUNCER_POOL_MODE=transaction -e POSTGRESQL_HOST=pg -e POSTGRESQL_DATABASE=electric \
+            -e POSTGRESQL_USERNAME=postgres -e POSTGRESQL_PASSWORD=password bitnamilegacy/pgbouncer:1.24.1-debian-12-r10
+      - uses: erlef/setup-beam@v1
+        with:
+          version-type: strict
+          version-file: .tool-versions
+      - uses: actions/cache@v4
+        with:
+          path: |
+            packages/sync-service/deps
+            packages/sync-service/_build/*/lib
+            !packages/sync-service/_build/*/lib/electric
+            !packages/sync-service/_build/*/lib/electric_telemetry
+          key: ef-sync-${{ runner.os }}-${{ hashFiles('.tool-versions') }}-${{ hashFiles('packages/sync-service/mix.lock') }}
+      - run: mix do deps.get + deps.compile
+      - run: mix compile
+      # One retry of the failures only: the upstream suite has a few timing-sensitive tests (3 of 2348 flaked locally
+      # on 2026-11-14). A test that fails twice fails the job.
+      - run: mix test --include slow || mix test --include slow --failed
+
+  agents:
+    name: agents-server + agents-runtime
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      DATABASE_URL: postgres://electric_agents:electric_agents@localhost:5432/electric_agents
+      ELECTRIC_URL: http://localhost:3060
+    steps:
+      - uses: actions/checkout@v4
+      - name: Postgres 18 + our sync image (explicit backend: the tests skip their own compose stack)
+        run: |
+          docker network create be
+          docker run -d --name pg --network be -p 5432:5432 -e POSTGRES_DB=electric_agents -e POSTGRES_USER=electric_agents \
+            -e POSTGRES_PASSWORD=electric_agents "$POSTGRES_IMAGE" -c wal_level=logical -c max_connections=300
+          for i in $(seq 1 30); do docker exec pg pg_isready -U electric_agents && break; sleep 1; done
+          docker run -d --name electric --network be -p 3060:3000 \
+            -e DATABASE_URL=postgresql://electric_agents:electric_agents@pg:5432/electric_agents -e ELECTRIC_INSECURE=true "$EF_SYNC_IMAGE"
+          for i in $(seq 1 60); do curl -fs localhost:3060/v1/health | grep -q active && break; sleep 2; done
+          curl -fs localhost:3060/v1/health
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --filter "@electric-ax/agents-server..." --filter "@electric-ax/agents-runtime..." --filter "@electric-ax/agents-server-conformance-tests..."
+      - name: Build the workspace packages the tests import
+        run: pnpm --filter "@electric-ax/agents-server^..." --filter "@electric-ax/agents-runtime^..." build
+      - run: pnpm --filter @electric-ax/agents-runtime test
+      - run: pnpm --filter @electric-ax/agents-server test
+      - name: Backend logs on failure
+        if: failure()
+        run: docker logs electric 2>&1 | tail -80
