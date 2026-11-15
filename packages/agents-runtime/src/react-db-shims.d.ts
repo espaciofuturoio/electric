@@ -3,8 +3,8 @@ declare module 'react' {
 }
 
 declare module '@tanstack/react-db' {
-  export function useLiveQuery<T>(
-    query: unknown,
-    deps?: Array<unknown>
-  ): { data?: T }
+  export function useLiveQuery<T>(config: {
+    query: unknown
+    queryKey?: ReadonlyArray<unknown>
+  }): { data?: T }
 }

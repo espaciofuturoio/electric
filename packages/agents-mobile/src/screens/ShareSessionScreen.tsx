@@ -128,15 +128,13 @@ export function ShareSessionScreen({
     (q) =>
       q
         .from({ entity: entitiesCollection })
-        .where(({ entity }) => eq(entity.url, entityUrl)),
-    [entitiesCollection, entityUrl]
-  )
+        .where(({ entity }) => eq(entity.url, entityUrl))
+)
   const entity = entities[0] ?? null
 
   const { data: users = [] } = useLiveQuery(
-    (q) => q.from({ user: usersCollection }),
-    [usersCollection]
-  )
+    (q) => q.from({ user: usersCollection })
+)
   const usersById = useMemo(
     () => new Map(users.map((user) => [user.id, user])),
     [users]

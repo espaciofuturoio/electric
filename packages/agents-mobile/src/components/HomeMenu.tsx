@@ -97,14 +97,12 @@ export function HomeMenu({
       query
         .from({ entity: entitiesCollection })
         .where(({ entity }) => not(eq(entity.type, `principal`)))
-        .orderBy(({ entity }) => entity.updated_at, `desc`),
-    [entitiesCollection]
-  )
+        .orderBy(({ entity }) => entity.updated_at, `desc`)
+)
 
   const { data: users = [] } = useLiveQuery(
-    (query) => query.from({ user: usersCollection }),
-    [usersCollection]
-  )
+    (query) => query.from({ user: usersCollection })
+)
 
   const distinctTypes = useMemo(() => {
     const seen = new Set<string>()

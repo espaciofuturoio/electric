@@ -146,7 +146,7 @@ function EntityTitle({
     setDraftTitle(nextTitle)
     if (nextTitle === title || !setEntityTitle) return
     const tx = setEntityTitle({ entityUrl: entity.url, title: nextTitle })
-    void tx.isPersisted.promise.catch(() => {
+    void tx.when(`settled`).catch(() => {
       setDraftTitle(title)
     })
   }

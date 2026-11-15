@@ -72,7 +72,8 @@
       "tmp@<0.2.6": "^0.2.6",
       "undici@>=7.0.0 <7.30.1": "^7.30.1",
       "ws@>=8.0.0 <8.21.0": "^8.21.0",
-      "zod@>=4.0.0 <4.6.6": "^4.6.6"
+      "zod@>=4.0.0 <4.6.6": "^4.6.6",
+      "@durable-streams/state": "https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz"
     }
   }
 }

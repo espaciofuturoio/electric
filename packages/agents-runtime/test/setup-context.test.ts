@@ -70,7 +70,7 @@ describe(`createSetupContext`, () => {
           }
         },
       })
-      void transaction.isPersisted.promise.catch(() => undefined)
+      void transaction.when(`settled`).catch(() => undefined)
       return transaction
     }
   }
@@ -219,7 +219,7 @@ describe(`createSetupContext`, () => {
         const { row } = arg as { row: Record<string, unknown> }
         coll.insert(row)
         return {
-          isPersisted: { promise: Promise.resolve() },
+          when: () => Promise.resolve(),
           state: `pending`,
           mutations: [
             { collection: { id: `shared-state:${collName}` }, type: `insert` },
@@ -233,7 +233,7 @@ describe(`createSetupContext`, () => {
         }
         coll.update(key, updater as (draft: object) => void)
         return {
-          isPersisted: { promise: Promise.resolve() },
+          when: () => Promise.resolve(),
           state: `pending`,
           mutations: [
             { collection: { id: `shared-state:${collName}` }, type: `update` },
@@ -244,7 +244,7 @@ describe(`createSetupContext`, () => {
         const { key } = arg as { key: string }
         coll.delete(key)
         return {
-          isPersisted: { promise: Promise.resolve() },
+          when: () => Promise.resolve(),
           state: `pending`,
           mutations: [
             { collection: { id: `shared-state:${collName}` }, type: `delete` },
@@ -373,7 +373,7 @@ describe(`createSetupContext`, () => {
 
   it(`ctx.state.collection.insert calls the auto-generated insert action and returns Transaction`, () => {
     const mockTransaction = {
-      isPersisted: { promise: Promise.resolve() },
+      when: () => Promise.resolve(),
       state: `pending`,
       mutations: [],
     }
@@ -397,7 +397,7 @@ describe(`createSetupContext`, () => {
 
   it(`ctx.state.collection.update calls the auto-generated update action and returns Transaction`, () => {
     const mockTransaction = {
-      isPersisted: { promise: Promise.resolve() },
+      when: () => Promise.resolve(),
       state: `pending`,
       mutations: [],
     }
@@ -425,7 +425,7 @@ describe(`createSetupContext`, () => {
 
   it(`ctx.state.collection.delete calls the auto-generated delete action and returns Transaction`, () => {
     const mockTransaction = {
-      isPersisted: { promise: Promise.resolve() },
+      when: () => Promise.resolve(),
       state: `pending`,
       mutations: [],
     }
@@ -499,7 +499,7 @@ describe(`createSetupContext`, () => {
   // ====================================================================
 
   it(`ctx.actions exposes custom actions (not CRUD actions)`, () => {
-    const mockTx = { isPersisted: { promise: Promise.resolve() } }
+    const mockTx = { when: () => Promise.resolve() }
     const acceptBid = vi.fn().mockReturnValue(mockTx)
 
     const { ctx } = makeCtx([], { bids: [] }, undefined, {}, [`bids`], {
@@ -520,7 +520,7 @@ describe(`createSetupContext`, () => {
 
   it(`ctx.actions.customAction returns Transaction`, () => {
     const mockTx = {
-      isPersisted: { promise: Promise.resolve() },
+      when: () => Promise.resolve(),
       state: `pending`,
       mutations: [
         { collection: { id: `stream-db:bids` }, type: `update` },
@@ -870,7 +870,7 @@ describe(`createSetupContext`, () => {
       domain: `security`,
       finding: `XSS found`,
     })
-    expect(tx).toHaveProperty(`isPersisted`)
+    expect(tx).toHaveProperty(`when`)
 
     // get
     const row = board.findings.get(`f-1`)
@@ -1145,7 +1145,7 @@ describe(`entity patterns`, () => {
           }
         },
       })
-      void transaction.isPersisted.promise.catch(() => undefined)
+      void transaction.when(`settled`).catch(() => undefined)
       return transaction
     }
   }
@@ -1238,7 +1238,7 @@ describe(`entity patterns`, () => {
         const { row } = arg as { row: Record<string, unknown> }
         coll.insert(row)
         return {
-          isPersisted: { promise: Promise.resolve() },
+          when: () => Promise.resolve(),
           state: `pending`,
           mutations: [],
         }
@@ -1250,7 +1250,7 @@ describe(`entity patterns`, () => {
         }
         coll.update(key, updater)
         return {
-          isPersisted: { promise: Promise.resolve() },
+          when: () => Promise.resolve(),
           state: `pending`,
           mutations: [],
         }
@@ -1259,7 +1259,7 @@ describe(`entity patterns`, () => {
         const { key } = arg as { key: string }
         coll.delete(key)
         return {
-          isPersisted: { promise: Promise.resolve() },
+          when: () => Promise.resolve(),
           state: `pending`,
           mutations: [],
         }
@@ -1293,12 +1293,12 @@ describe(`entity patterns`, () => {
 
   it(`Pattern 1 (Counter): state proxy insert/update on counts collection`, () => {
     const insertAction = vi.fn().mockReturnValue({
-      isPersisted: { promise: Promise.resolve() },
+      when: () => Promise.resolve(),
       state: `pending`,
       mutations: [],
     })
     const updateAction = vi.fn().mockReturnValue({
-      isPersisted: { promise: Promise.resolve() },
+      when: () => Promise.resolve(),
       state: `pending`,
       mutations: [],
     })
@@ -1325,7 +1325,7 @@ describe(`entity patterns`, () => {
     expect(insertAction).toHaveBeenCalledWith({
       row: { key: `session`, value: 1 },
     })
-    expect(tx).toHaveProperty(`isPersisted`)
+    expect(tx).toHaveProperty(`when`)
 
     // Effect-driven write: increment existing counter
     const updater = (draft: Record<string, unknown>) => {
@@ -1414,7 +1414,7 @@ describe(`entity patterns`, () => {
 
   it(`Pattern 3 (PR Reviewer): state proxy insert records review`, () => {
     const insertAction = vi.fn().mockReturnValue({
-      isPersisted: { promise: Promise.resolve() },
+      when: () => Promise.resolve(),
       state: `pending`,
       mutations: [],
     })
@@ -1761,12 +1761,12 @@ describe(`entity patterns`, () => {
 
   it(`Pattern 8 (Contract Net): contractor state proxy with bid tracking`, () => {
     const insertAction = vi.fn().mockReturnValue({
-      isPersisted: { promise: Promise.resolve() },
+      when: () => Promise.resolve(),
       state: `pending`,
       mutations: [],
     })
     const updateAction = vi.fn().mockReturnValue({
-      isPersisted: { promise: Promise.resolve() },
+      when: () => Promise.resolve(),
       state: `pending`,
       mutations: [],
     })
@@ -1819,7 +1819,7 @@ describe(`entity patterns`, () => {
 
   it(`Pattern 8 (Contract Net): custom acceptBid action exposed on ctx.actions`, () => {
     const mockTx = {
-      isPersisted: { promise: Promise.resolve() },
+      when: () => Promise.resolve(),
       state: `pending`,
       mutations: [],
     }
@@ -1939,7 +1939,7 @@ describe(`entity patterns`, () => {
 
   it(`Pattern 10 (Metrics Digest): args for schedule and state writes coexist`, () => {
     const insertAction = vi.fn().mockReturnValue({
-      isPersisted: { promise: Promise.resolve() },
+      when: () => Promise.resolve(),
       state: `pending`,
       mutations: [],
     })

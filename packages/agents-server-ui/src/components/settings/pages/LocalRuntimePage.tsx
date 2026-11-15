@@ -189,15 +189,12 @@ export function LocalRuntimePage(): React.ReactElement {
     ? activeRunnersCollection
     : selectedServerRunnersCollection
   const runnerId = state?.pullWakeRunnerId ?? null
-  const { data: runnerRows = [] } = useLiveQuery(
-    (query) => {
-      if (!runnersCollection || !runnerId) return undefined
-      return query
-        .from({ runner: runnersCollection })
-        .where(({ runner }) => eq(runner.id, runnerId))
-    },
-    [runnersCollection, runnerId]
-  )
+  const { data: runnerRows = [] } = useLiveQuery((query) => {
+    if (!runnersCollection || !runnerId) return undefined
+    return query
+      .from({ runner: runnersCollection })
+      .where(({ runner }) => eq(runner.id, runnerId))
+  })
   const runner = runnerRows[0] ?? null
   const healthEndpoint = runnerHealthEndpoint(selectedServer?.url, runnerId)
   const diagnosticsCollection = useMemo(() => {
@@ -207,13 +204,10 @@ export function LocalRuntimePage(): React.ReactElement {
       runnerId
     )
   }, [selectedServer?.url, runnerId])
-  const { data: runtimeDiagnosticsRows = [] } = useLiveQuery(
-    (query) => {
-      if (!diagnosticsCollection) return undefined
-      return query.from({ diagnostics: diagnosticsCollection })
-    },
-    [diagnosticsCollection]
-  )
+  const { data: runtimeDiagnosticsRows = [] } = useLiveQuery((query) => {
+    if (!diagnosticsCollection) return undefined
+    return query.from({ diagnostics: diagnosticsCollection })
+  })
   const runnerTelemetry = runtimeDiagnosticsRows[0] ?? null
   const health = runnerHealth(runner, runnerTelemetry, now)
   const healthTone = RUNNER_HEALTH_TONES[health.status]

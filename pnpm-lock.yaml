@@ -35,6 +35,7 @@ overrides:
   undici@>=7.0.0 <7.30.1: ^7.30.1
   ws@>=8.0.0 <8.21.0: ^8.21.0
   zod@>=4.0.0 <4.6.6: ^4.6.6
+  '@durable-streams/state': https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz
 
 patchedDependencies:
   '@microsoft/fetch-event-source':
@@ -116,8 +117,8 @@ importers:
   examples/agents-chat-starter:
     dependencies:
       '@durable-streams/state':
-        specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.8.3))
+        specifier: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz
+        version: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz(@tanstack/db@0.9.2(typescript@5.8.3))
       '@electric-ax/agents-runtime':
         specifier: workspace:*
         version: link:../../packages/agents-runtime
@@ -224,8 +225,8 @@ importers:
   examples/deep-survey:
     dependencies:
       '@durable-streams/state':
-        specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.8.3))
+        specifier: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz
+        version: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz(@tanstack/db@0.9.2(typescript@5.8.3))
       '@electric-ax/agents-runtime':
         specifier: workspace:*
         version: link:../../packages/agents-runtime
@@ -1560,8 +1561,8 @@ importers:
   packages/agents:
     dependencies:
       '@durable-streams/state':
-        specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.9.3))
+        specifier: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz
+        version: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz(@tanstack/db@1.0.0-rc.1.5(typescript@5.9.3))
       '@earendil-works/pi-agent-core':
         specifier: ^0.85.1
         version: 0.85.1(@modelcontextprotocol/sdk@1.32.2(zod@4.6.7))(ws@8.23.0)(zod@4.6.7)
@@ -1740,14 +1741,14 @@ importers:
         specifier: ~7.2.0
         version: 7.2.0(expo@54.0.35)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       '@tanstack/db':
-        specifier: ^0.9.2
-        version: 0.9.2(typescript@5.9.3)
+        specifier: ^1.0.0-rc.1.5
+        version: 1.0.0-rc.1.5(typescript@5.9.3)
       '@tanstack/electric-db-collection':
-        specifier: ^0.4.10
-        version: 0.4.10(typescript@5.9.3)
+        specifier: ^1.0.0-rc.1.5
+        version: 1.0.0-rc.1.5(typescript@5.9.3)
       '@tanstack/react-db':
-        specifier: ^0.4.1
-        version: 0.4.1(react@19.1.0)(typescript@5.9.3)
+        specifier: ^1.0.0-rc.1.5
+        version: 1.0.0-rc.1.5(react@19.1.0)(typescript@5.9.3)
       expo:
         specifier: 54.0.35
         version: 54.0.35(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.24)(react-native-webview@13.15.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)(typescript@5.9.3)
@@ -1852,8 +1853,8 @@ importers:
         specifier: ^0.2.6
         version: 0.2.6
       '@durable-streams/state':
-        specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.9.3))
+        specifier: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz
+        version: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz(@tanstack/db@1.0.0-rc.1.5(typescript@5.9.3))
       '@earendil-works/pi-agent-core':
         specifier: ^0.85.1
         version: 0.85.1(@modelcontextprotocol/sdk@1.32.2(zod@4.6.7))(ws@8.23.0)(zod@4.6.7)
@@ -1873,8 +1874,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       '@tanstack/db':
-        specifier: ^0.9.2
-        version: 0.9.2(typescript@5.9.3)
+        specifier: ^1.0.0-rc.1.5
+        version: 1.0.0-rc.1.5(typescript@5.9.3)
       ajv:
         specifier: ^8.18.0
         version: 8.20.0
@@ -1917,10 +1918,10 @@ importers:
     devDependencies:
       '@durable-streams/server':
         specifier: ^0.3.7
-        version: 0.3.7(@tanstack/db@0.9.2(typescript@5.9.3))
+        version: 0.3.7(@tanstack/db@1.0.0-rc.1.5(typescript@5.9.3))
       '@tanstack/react-db':
-        specifier: ^0.4.1
-        version: 0.4.1(react@19.2.0)(typescript@5.9.3)
+        specifier: ^1.0.0-rc.1.5
+        version: 1.0.0-rc.1.5(react@19.2.0)(typescript@5.9.3)
       '@types/dockerode':
         specifier: ^4.0.1
         version: 4.0.1
@@ -1959,10 +1960,10 @@ importers:
         version: 0.2.6
       '@durable-streams/server':
         specifier: ^0.3.7
-        version: 0.3.7(@tanstack/db@0.9.2(typescript@5.8.3))
+        version: 0.3.7(@tanstack/db@1.0.0-rc.1.5(typescript@5.8.3))
       '@durable-streams/state':
-        specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.8.3))
+        specifier: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz
+        version: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz(@tanstack/db@1.0.0-rc.1.5(typescript@5.8.3))
       '@earendil-works/pi-agent-core':
         specifier: ^0.85.1
         version: 0.85.1(@modelcontextprotocol/sdk@1.32.2(zod@4.6.7))(ws@8.23.0)(zod@4.6.7)
@@ -2083,8 +2084,8 @@ importers:
         specifier: ^0.2.6
         version: 0.2.6
       '@durable-streams/state':
-        specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.9.3))
+        specifier: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz
+        version: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz(@tanstack/db@1.0.0-rc.1.5(typescript@5.9.3))
       '@electric-ax/agents-runtime':
         specifier: workspace:*
         version: link:../agents-runtime
@@ -2095,14 +2096,14 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2(react@19.1.0)
       '@tanstack/db':
-        specifier: ^0.9.2
-        version: 0.9.2(typescript@5.9.3)
+        specifier: ^1.0.0-rc.1.5
+        version: 1.0.0-rc.1.5(typescript@5.9.3)
       '@tanstack/electric-db-collection':
-        specifier: ^0.4.10
-        version: 0.4.10(typescript@5.9.3)
+        specifier: ^1.0.0-rc.1.5
+        version: 1.0.0-rc.1.5(typescript@5.9.3)
       '@tanstack/react-db':
-        specifier: ^0.4.1
-        version: 0.4.1(react@19.1.0)(typescript@5.9.3)
+        specifier: ^1.0.0-rc.1.5
+        version: 1.0.0-rc.1.5(react@19.1.0)(typescript@5.9.3)
       '@tanstack/react-router':
         specifier: ^1.167.4
         version: 1.168.23(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -2201,8 +2202,8 @@ importers:
         specifier: ^0.2.6
         version: 0.2.6
       '@durable-streams/state':
-        specifier: ^0.3.1
-        version: 0.3.1(@tanstack/db@0.9.2(typescript@5.9.3))
+        specifier: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz
+        version: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz(@tanstack/db@1.0.0-rc.1.5(typescript@5.9.3))
       '@electric-ax/agents':
         specifier: workspace:*
         version: link:../agents
@@ -2213,11 +2214,11 @@ importers:
         specifier: ^1.5.22
         version: link:../typescript-client
       '@tanstack/db':
-        specifier: ^0.9.2
-        version: 0.9.2(typescript@5.9.3)
+        specifier: ^1.0.0-rc.1.5
+        version: 1.0.0-rc.1.5(typescript@5.9.3)
       '@tanstack/react-db':
-        specifier: ^0.4.1
-        version: 0.4.1(react@19.2.0)(typescript@5.9.3)
+        specifier: ^1.0.0-rc.1.5
+        version: 1.0.0-rc.1.5(react@19.2.0)(typescript@5.9.3)
       commander:
         specifier: ^13.1.0
         version: 13.1.0
@@ -4725,6 +4726,11 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
+  '@durable-streams/client@0.2.7':
+    resolution: {integrity: sha512-oxWbPEo8NO1Ruv9UgUVu3OswdE2z5ERhjccaujlpwe4tWuVd+Y/kdx+HtrkOnwN+bnRHTlxKYUNY8JTyrnhKew==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+
   '@durable-streams/server-conformance-tests@0.3.5':
     resolution: {integrity: sha512-sXl2S562yVa+gO9ypZMJ3rC9lMpsUoc7XIBw24iY/k8g0RczgKdK3jYpgc10bttZLQLLGQMo3QxZ+pbGgIO5dw==}
     engines: {node: '>=18.0.0'}
@@ -4734,12 +4740,13 @@ packages:
     resolution: {integrity: sha512-3vF1EjCn+DhqZn5f7/aqW/E9sN4UGUhhYVn5LoeD7lP7sAdCy1M5sFCdI+tUe6B+5l7ORKNxU9lhgY7HfYa+Zw==}
     engines: {node: '>=18.0.0'}
 
-  '@durable-streams/state@0.3.1':
-    resolution: {integrity: sha512-HYhw520Bfl9+L3MJgWpzLQjByP5y/uNNasOqSSFfyWhFxZeaKHM6Go2P79YFfTJPmXh4ZHEh1jOgIfrumqT6hA==}
+  '@durable-streams/state@https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz':
+    resolution: {tarball: https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz}
+    version: 0.3.2-tsdb1.1
     engines: {node: '>=18.0.0'}
     hasBin: true
     peerDependencies:
-      '@tanstack/db': '>=0.6.0 <1.0.0'
+      '@tanstack/db': ^1.0.0-rc.0
     peerDependenciesMeta:
       '@tanstack/db':
         optional: true
@@ -9983,6 +9990,11 @@ packages:
     peerDependencies:
       typescript: '>=4.7'
 
+  '@tanstack/db-ivm@1.0.0-rc.1.3':
+    resolution: {integrity: sha512-4LhRE/6nypOURscUzRyjqffaANVBK8TDv/011cLz79NMxNpZuNgjzwV3s9Z+Rb1d4je+ooRBfPt8hPmGp6dPMw==}
+    peerDependencies:
+      typescript: '>=4.7'
+
   '@tanstack/db@0.0.27':
     resolution: {integrity: sha512-zFrfYxBF+8zbxlp0nXtcJnLaj0ZN5sxij3F0r+mVFVC1GNHcgJFZp81RuMJbx9nuC4c2h3P9r2Mb81e6wnJyeA==}
     peerDependencies:
@@ -10005,6 +10017,11 @@ packages:
 
   '@tanstack/db@0.9.2':
     resolution: {integrity: sha512-jeyKbppXwjPNHe0GEVIvsvtirDCxjbPR2xphQaNjgteR15Y+Qnm+6IQNcd3zJ+98uJZ3ot9nagV3UNI+ckVRhQ==}
+    peerDependencies:
+      typescript: '>=4.7'
+
+  '@tanstack/db@1.0.0-rc.1.5':
+    resolution: {integrity: sha512-Cpbrc7e1ZcM5j+l/hltVB4IuA6P2i1Py7WRqUsbb0Whof/eylpEfJzx0wgw/2PiOF+s3wJlIXArmghe/zjZR/g==}
     peerDependencies:
       typescript: '>=4.7'
 
@@ -10041,8 +10058,8 @@ packages:
   '@tanstack/electric-db-collection@0.2.8':
     resolution: {integrity: sha512-vxs+ne3WKcIJuxJCU7X+vv8DUwmqB+229MFqoF1mJQcvZrs2aPkA5UJQ0P6Y3TSLQ305Mx1ypnuDlF5buzE/mg==}
 
-  '@tanstack/electric-db-collection@0.4.10':
-    resolution: {integrity: sha512-eGpvLkCi1UVB9/4vbwgLU3DaFBrR5dS9ZNAYZWn962UeKwv0pAbYUUKSMYdMUDeG7Yq2KEnotJD3xCWu3Y9uVQ==}
+  '@tanstack/electric-db-collection@1.0.0-rc.1.5':
+    resolution: {integrity: sha512-Q0A8Y6cgFIXyKEyDOjme3JzTaBbIxPcytLQO8nQ5Urtg39Zov7Bj0UmSEkuupXEUKTt2GkwofVTIlpKASWVT8w==}
 
   '@tanstack/history@1.139.0':
     resolution: {integrity: sha512-l6wcxwDBeh/7Dhles23U1O8lp9kNJmAb2yNjekR6olZwCRNAVA8TCXlVCrueELyFlYZqvQkh0ofxnzG62A1Kkg==}
@@ -10063,6 +10080,10 @@ packages:
   '@tanstack/pacer-lite@0.2.1':
     resolution: {integrity: sha512-3PouiFjR4B6x1c969/Pl4ZIJleof1M0n6fNX8NRiC9Sqv1g06CVDlEaXUR4212ycGFyfq4q+t8Gi37Xy+z34iQ==}
     engines: {node: '>=18'}
+
+  '@tanstack/pacer-lite@0.3.0':
+    resolution: {integrity: sha512-+YeHKWX5Zd1Irga2smwAolGtzOcf8VVYhM2QI5XEA5TN58iKKufTjhvrbTCEgLLglR1ynHMGVT/l4m5PkwOdaw==}
+    engines: {node: '>=20'}
 
   '@tanstack/query-core@5.59.20':
     resolution: {integrity: sha512-e8vw0lf7KwfGe1if4uPFhvZRWULqHjFcz3K8AebtieXvnMOz5FSzlZe3mTLlPuUBcydCnBRqYs2YJ5ys68wwLg==}
@@ -10087,6 +10108,11 @@ packages:
     resolution: {integrity: sha512-mA/a3TAufm0/AZUHmfyKKYfJnEH0XEzJ1Cymt5ZOLqR90MzzDK9KyaDh/JScYHYEipoRkKeRcmedAnHksP6yrg==}
     peerDependencies:
       react: '>=16.8.0'
+
+  '@tanstack/react-db@1.0.0-rc.1.5':
+    resolution: {integrity: sha512-6IDdNA8iNYtEAfbFkI/32gKC2INlV6b17CweaDpyfLdkQ+LyX/qWxDFBL6rKsS29crkAitepPkG3zXDHZpFBEw==}
+    peerDependencies:
+      react: '>=18.0.0'
 
   '@tanstack/react-query-persist-client@5.59.20':
     resolution: {integrity: sha512-7dV9wGs9f8IvGysfmsmLcQztHjULOMB30HmERo8yjwVHRKhoQvdtKTvQ9aX2lSP5zzP1Qd1/IHF2hBB11Q/rwA==}
@@ -14860,6 +14886,10 @@ packages:
 
   fractional-indexing@3.2.0:
     resolution: {integrity: sha512-PcOxmqwYCW7O2ovKRU8OoQQj2yqTfEB/yeTYk4gPid6dN5ODRfU1hXd9tTVZzax/0NkO7AxpHykvZnT1aYp/BQ==}
+    engines: {node: ^14.13.1 || >=16.0.0}
+
+  fractional-indexing@3.4.0:
+    resolution: {integrity: sha512-8J3glhz2rrpKG6KmI7wmJo3zH1VjeOpN+vTJSw1fOyO+Viqq3zX6/5NGh6oaZB2qIAYdOYuu5Dz9xp4faOO0Pg==}
     engines: {node: ^14.13.1 || >=16.0.0}
 
   freeport-async@2.0.0:
@@ -25098,6 +25128,10 @@ snapshots:
       '@microsoft/fetch-event-source': 2.0.1(patch_hash=46f4e76dd960e002a542732bb4323817a24fce1673cb71e2f458fe09776fa188)
       fastq: 1.20.1
 
+  '@durable-streams/client@0.2.7':
+    dependencies:
+      '@microsoft/fetch-event-source': 2.0.1(patch_hash=46f4e76dd960e002a542732bb4323817a24fce1673cb71e2f458fe09776fa188)
+
   '@durable-streams/server-conformance-tests@0.3.5(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.0(@noble/hashes@2.0.1))(vite@7.3.2(@types/node@25.9.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.48.0)(tsx@4.20.3)(yaml@2.9.0))':
     dependencies:
       '@durable-streams/client': 0.2.6
@@ -25118,37 +25152,44 @@ snapshots:
       - msw
       - vite
 
-  '@durable-streams/server@0.3.7(@tanstack/db@0.9.2(typescript@5.8.3))':
+  '@durable-streams/server@0.3.7(@tanstack/db@1.0.0-rc.1.5(typescript@5.8.3))':
     dependencies:
       '@durable-streams/client': 0.2.6
-      '@durable-streams/state': 0.3.1(@tanstack/db@0.9.2(typescript@5.8.3))
+      '@durable-streams/state': https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz(@tanstack/db@1.0.0-rc.1.5(typescript@5.8.3))
       '@neophi/sieve-cache': 1.5.0
       lmdb: 3.5.4
     transitivePeerDependencies:
       - '@tanstack/db'
 
-  '@durable-streams/server@0.3.7(@tanstack/db@0.9.2(typescript@5.9.3))':
+  '@durable-streams/server@0.3.7(@tanstack/db@1.0.0-rc.1.5(typescript@5.9.3))':
     dependencies:
       '@durable-streams/client': 0.2.6
-      '@durable-streams/state': 0.3.1(@tanstack/db@0.9.2(typescript@5.9.3))
+      '@durable-streams/state': https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz(@tanstack/db@1.0.0-rc.1.5(typescript@5.9.3))
       '@neophi/sieve-cache': 1.5.0
       lmdb: 3.5.4
     transitivePeerDependencies:
       - '@tanstack/db'
 
-  '@durable-streams/state@0.3.1(@tanstack/db@0.9.2(typescript@5.8.3))':
+  '@durable-streams/state@https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz(@tanstack/db@0.9.2(typescript@5.8.3))':
     dependencies:
-      '@durable-streams/client': 0.2.6
+      '@durable-streams/client': 0.2.7
       '@standard-schema/spec': 1.1.0
     optionalDependencies:
       '@tanstack/db': 0.9.2(typescript@5.8.3)
 
-  '@durable-streams/state@0.3.1(@tanstack/db@0.9.2(typescript@5.9.3))':
+  '@durable-streams/state@https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz(@tanstack/db@1.0.0-rc.1.5(typescript@5.8.3))':
     dependencies:
-      '@durable-streams/client': 0.2.6
+      '@durable-streams/client': 0.2.7
       '@standard-schema/spec': 1.1.0
     optionalDependencies:
-      '@tanstack/db': 0.9.2(typescript@5.9.3)
+      '@tanstack/db': 1.0.0-rc.1.5(typescript@5.8.3)
+
+  '@durable-streams/state@https://github.com/espaciofuturoio/durable-streams/releases/download/state-0.3.2-tsdb1.1/durable-streams-state-0.3.2-tsdb1.1.tgz(@tanstack/db@1.0.0-rc.1.5(typescript@5.9.3))':
+    dependencies:
+      '@durable-streams/client': 0.2.7
+      '@standard-schema/spec': 1.1.0
+    optionalDependencies:
+      '@tanstack/db': 1.0.0-rc.1.5(typescript@5.9.3)
 
   '@earendil-works/chord@0.85.1':
     dependencies:
@@ -30815,10 +30856,15 @@ snapshots:
       sorted-btree: 1.8.1
       typescript: 5.8.3
 
-  '@tanstack/db-ivm@0.1.22(typescript@5.9.3)':
+  '@tanstack/db-ivm@1.0.0-rc.1.3(typescript@5.8.3)':
     dependencies:
-      fractional-indexing: 3.2.0
-      sorted-btree: 1.8.1
+      fractional-indexing: 3.4.0
+      typescript: 5.8.3
+    optional: true
+
+  '@tanstack/db-ivm@1.0.0-rc.1.3(typescript@5.9.3)':
+    dependencies:
+      fractional-indexing: 3.4.0
       typescript: 5.9.3
 
   '@tanstack/db@0.0.27(typescript@5.8.3)':
@@ -30854,11 +30900,19 @@ snapshots:
       '@tanstack/pacer-lite': 0.2.1
       typescript: 5.8.3
 
-  '@tanstack/db@0.9.2(typescript@5.9.3)':
+  '@tanstack/db@1.0.0-rc.1.5(typescript@5.8.3)':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      '@tanstack/db-ivm': 0.1.22(typescript@5.9.3)
-      '@tanstack/pacer-lite': 0.2.1
+      '@tanstack/db-ivm': 1.0.0-rc.1.3(typescript@5.8.3)
+      '@tanstack/pacer-lite': 0.3.0
+      typescript: 5.8.3
+    optional: true
+
+  '@tanstack/db@1.0.0-rc.1.5(typescript@5.9.3)':
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      '@tanstack/db-ivm': 1.0.0-rc.1.3(typescript@5.9.3)
+      '@tanstack/pacer-lite': 0.3.0
       typescript: 5.9.3
 
   '@tanstack/devtools-client@0.0.4':
@@ -30928,11 +30982,11 @@ snapshots:
       - supports-color
       - typescript
 
-  '@tanstack/electric-db-collection@0.4.10(typescript@5.9.3)':
+  '@tanstack/electric-db-collection@1.0.0-rc.1.5(typescript@5.9.3)':
     dependencies:
       '@electric-sql/client': 1.5.28
       '@standard-schema/spec': 1.1.0
-      '@tanstack/db': 0.9.2(typescript@5.9.3)
+      '@tanstack/db': 1.0.0-rc.1.5(typescript@5.9.3)
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
@@ -30949,6 +31003,8 @@ snapshots:
   '@tanstack/pacer-lite@0.1.1': {}
 
   '@tanstack/pacer-lite@0.2.1': {}
+
+  '@tanstack/pacer-lite@0.3.0': {}
 
   '@tanstack/query-core@5.59.20': {}
 
@@ -30977,27 +31033,25 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@tanstack/react-db@0.4.1(react@19.1.0)(typescript@5.9.3)':
-    dependencies:
-      '@tanstack/db': 0.9.2(typescript@5.9.3)
-      react: 19.1.0
-      use-sync-external-store: 1.6.0(react@19.1.0)
-    transitivePeerDependencies:
-      - typescript
-
-  '@tanstack/react-db@0.4.1(react@19.2.0)(typescript@5.9.3)':
-    dependencies:
-      '@tanstack/db': 0.9.2(typescript@5.9.3)
-      react: 19.2.0
-      use-sync-external-store: 1.6.0(react@19.2.0)
-    transitivePeerDependencies:
-      - typescript
-
   '@tanstack/react-db@0.4.1(react@19.2.5)(typescript@5.8.3)':
     dependencies:
       '@tanstack/db': 0.9.2(typescript@5.8.3)
       react: 19.2.5
       use-sync-external-store: 1.6.0(react@19.2.5)
+    transitivePeerDependencies:
+      - typescript
+
+  '@tanstack/react-db@1.0.0-rc.1.5(react@19.1.0)(typescript@5.9.3)':
+    dependencies:
+      '@tanstack/db': 1.0.0-rc.1.5(typescript@5.9.3)
+      react: 19.1.0
+    transitivePeerDependencies:
+      - typescript
+
+  '@tanstack/react-db@1.0.0-rc.1.5(react@19.2.0)(typescript@5.9.3)':
+    dependencies:
+      '@tanstack/db': 1.0.0-rc.1.5(typescript@5.9.3)
+      react: 19.2.0
     transitivePeerDependencies:
       - typescript
 
@@ -37431,6 +37485,8 @@ snapshots:
   fraction.js@4.3.7: {}
 
   fractional-indexing@3.2.0: {}
+
+  fractional-indexing@3.4.0: {}
 
   freeport-async@2.0.0: {}
 

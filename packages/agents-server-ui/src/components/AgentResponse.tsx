@@ -482,20 +482,17 @@ export const AgentResponseLive = memo(function AgentResponseLive({
   onReplyToToolCall?: (item: EntityTimelineToolCallItem) => void
   onSearchTextChange?: (rowKey: string, text: string) => void
 }): React.ReactElement {
-  const { data: items = [] } = useLiveQuery(
-    (q) => (run.items ? q.from({ item: run.items }) : undefined),
-    [run.items]
+  const { data: items = [] } = useLiveQuery((q) =>
+    run.items ? q.from({ item: run.items }) : undefined
   )
-  const { data: errors = [] } = useLiveQuery(
-    (q) => (run.errors ? q.from({ error: run.errors }) : undefined),
-    [run.errors]
+  const { data: errors = [] } = useLiveQuery((q) =>
+    run.errors ? q.from({ error: run.errors }) : undefined
   )
   // Subscribe to the run's reasoning rows so the section ticks as
   // each `reasoning_delta` arrives. Empty array for runs without
   // any reasoning content (most non-extended-thinking models).
-  const { data: reasoningRows = [] } = useLiveQuery(
-    (q) => (run.reasoning ? q.from({ reasoning: run.reasoning }) : undefined),
-    [run.reasoning]
+  const { data: reasoningRows = [] } = useLiveQuery((q) =>
+    run.reasoning ? q.from({ reasoning: run.reasoning }) : undefined
   )
   const reasoningEntries = useMemo<Array<ReasoningEntry>>(
     () =>

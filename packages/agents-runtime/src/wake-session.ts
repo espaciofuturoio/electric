@@ -306,14 +306,14 @@ function normalizeManifestEntry(entry: ManifestEntry): ManifestEntry {
     $collectionId?: unknown
     $key?: unknown
     $origin?: unknown
-    $synced?: unknown
+    $hasPendingWrites?: unknown
   }
   delete clone._offset
   delete clone._seq
   delete clone.$collectionId
   delete clone.$key
   delete clone.$origin
-  delete clone.$synced
+  delete clone.$hasPendingWrites
   return clone
 }
 

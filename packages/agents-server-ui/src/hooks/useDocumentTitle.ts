@@ -32,20 +32,17 @@ export function useDocumentTitle(): void {
   const location = useLocation()
   const settingsLabel = parseSettingsLabel(location.pathname)
 
-  const { data: matches = [] } = useLiveQuery(
-    (q) => {
-      if (!entitiesCollection || !activeEntityUrl) return undefined
-      return q
-        .from({ e: entitiesCollection })
-        .where(({ e }) => eq(e.url, activeEntityUrl))
-        .select(({ e }) => ({
-          url: e.url,
-          tags: e.tags,
-          spawn_args: e.spawn_args,
-        }))
-    },
-    [entitiesCollection, activeEntityUrl]
-  )
+  const { data: matches = [] } = useLiveQuery((q) => {
+    if (!entitiesCollection || !activeEntityUrl) return undefined
+    return q
+      .from({ e: entitiesCollection })
+      .where(({ e }) => eq(e.url, activeEntityUrl))
+      .select(({ e }) => ({
+        url: e.url,
+        tags: e.tags,
+        spawn_args: e.spawn_args,
+      }))
+  })
   const entity = matches[0]
 
   useEffect(() => {

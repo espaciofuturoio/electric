@@ -479,7 +479,7 @@ export function MessageInput({
             pendingOrderIndex,
           })
           setValue(``)
-          tx.isPersisted.promise.catch((err: Error) => {
+          tx.when(`settled`).catch((err: Error) => {
             setError(err.message)
           })
         }
@@ -566,13 +566,11 @@ function AgentRunView({
   isStreaming: boolean
 }): React.ReactElement {
   const { data: items = [] } = useLiveQuery(
-    (q) => (run.items ? q.from({ item: run.items }) : undefined),
-    [run.items]
-  )
+    (q) => (run.items ? q.from({ item: run.items }) : undefined)
+)
   const { data: errors = [] } = useLiveQuery(
-    (q) => (run.errors ? q.from({ error: run.errors }) : undefined),
-    [run.errors]
-  )
+    (q) => (run.errors ? q.from({ error: run.errors }) : undefined)
+)
 
   const sortedItems = useMemo(
     () => [...(items as Array<EntityTimelineRunItem>)].sort(compareRunItems),
@@ -678,18 +676,16 @@ export function ObserveView({
   headers?: Record<string, string>
 }): React.ReactElement {
   const timelineQuery = useMemo(() => createEntityTimelineQuery(db), [db])
-  const { data: timelineRows = [] } = useLiveQuery(timelineQuery as any, [
-    timelineQuery,
-  ])
+  const { data: timelineRows = [] } = useLiveQuery(timelineQuery as any
+)
   const displayRows = useMemo(
     () =>
       timelineRowsToDisplayRows(timelineRows as Array<EntityTimelineQueryRow>),
     [timelineRows]
   )
   const { data: entityStoppedRows = [] } = useLiveQuery(
-    (q) => q.from({ stopped: db.collections.entityStopped }),
-    [db.collections.entityStopped]
-  )
+    (q) => q.from({ stopped: db.collections.entityStopped })
+)
   const closed = entityStoppedRows.length > 0
 
   const lastAgentIndex = useMemo(() => {

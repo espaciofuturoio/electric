@@ -92,10 +92,7 @@ describe(`createSendCommentAction`, () => {
 
     const firstTx = sendComment({ body: `first` })
     const secondTx = sendComment({ body: `second` })
-    await Promise.all([
-      firstTx.isPersisted.promise,
-      secondTx.isPersisted.promise,
-    ])
+    await Promise.all([firstTx.when(`settled`), secondTx.when(`settled`)])
 
     expect(optimistic).toHaveLength(2)
     expect(optimistic[0]?._principal?.url).toBe(`/principal/user%3Ame`)
@@ -139,7 +136,7 @@ describe(`createSendCommentAction`, () => {
       replyTo,
       targetSnapshot,
     })
-    await tx.isPersisted.promise
+    await tx.when(`settled`)
 
     expect(optimistic).toHaveLength(1)
     expect(optimistic[0]).toMatchObject({
@@ -183,7 +180,7 @@ describe(`createSendCommentAction`, () => {
 
     const tx = sendComment({ body: `blocked` })
 
-    await expect(tx.isPersisted.promise).rejects.toThrow(`No write access`)
+    await expect(tx.when(`settled`)).rejects.toThrow(`No write access`)
   })
 })
 

@@ -200,9 +200,8 @@ export function SessionScreen({
     (query) =>
       query
         .from({ entity: entitiesCollection })
-        .where(({ entity }) => eq(entity.url, entityUrl)),
-    [entitiesCollection, entityUrl]
-  )
+        .where(({ entity }) => eq(entity.url, entityUrl))
+)
   const entity = matches.at(0) ?? null
   const permissions = useEntityPermissions(entity, SESSION_PERMISSIONS)
   const canWrite = permissions.write
@@ -558,18 +557,16 @@ function NativeMessageComposer({
         ? q
             .from({ slashCommand: db.collections.slashCommands as any })
             .orderBy(({ slashCommand }: any) => slashCommand.name, `asc`)
-        : undefined,
-    [db]
-  )
+        : undefined
+)
   const { data: matchingTypes = [] } = useLiveQuery(
     (q) =>
       entity
         ? q
             .from({ type: entityTypesCollection })
             .where(({ type }) => eq(type.name, entity.type))
-        : undefined,
-    [entityTypesCollection, entity?.type]
-  )
+        : undefined
+)
   const slashCommands = useMemo<Array<SlashCommandRow>>(() => {
     if (liveSlashCommands.length > 0) {
       return liveSlashCommands as Array<SlashCommandRow>
@@ -685,7 +682,7 @@ function NativeMessageComposer({
       slash.reset()
       setEditingMessage(null)
       onSendMessage?.()
-      finishPersistedAction(tx.isPersisted.promise)
+      finishPersistedAction(tx.when(`settled`))
       return
     }
 
@@ -706,7 +703,7 @@ function NativeMessageComposer({
     setEditingMessage(null)
     attach.clear()
     onSendMessage?.()
-    finishPersistedAction(tx.isPersisted.promise)
+    finishPersistedAction(tx.when(`settled`))
   }
 
   const handleComposerAction = (): void => {
@@ -726,7 +723,7 @@ function NativeMessageComposer({
         key: message.key,
         mode: `paused`,
         status: `pending`,
-      }).isPersisted.promise.catch((err: Error) => {
+      }).when(`settled`).catch((err: Error) => {
         setError(err.message)
       })
       setEditingMessage({ key: message.key })
@@ -744,7 +741,7 @@ function NativeMessageComposer({
         key: editingMessage.key,
         mode: `queued`,
         status: `pending`,
-      }).isPersisted.promise.catch((err: Error) => {
+      }).when(`settled`).catch((err: Error) => {
         setError(err.message)
       })
     }
@@ -758,7 +755,7 @@ function NativeMessageComposer({
     (key: string): void => {
       if (disabled || writeDisabled) return
       setError(null)
-      deleteAction?.({ key }).isPersisted.promise.catch((err: Error) => {
+      deleteAction?.({ key }).when(`settled`).catch((err: Error) => {
         setError(err.message)
       })
       if (editingMessage?.key === key) cancelEditing()
@@ -770,7 +767,7 @@ function NativeMessageComposer({
     (key: string): void => {
       if (disabled || writeDisabled) return
       setError(null)
-      steerAction?.({ key }).isPersisted.promise.catch((err: Error) => {
+      steerAction?.({ key }).when(`settled`).catch((err: Error) => {
         setError(err.message)
       })
       if (editingMessage?.key === key) cancelEditing()
@@ -790,7 +787,7 @@ function NativeMessageComposer({
     (key: string, position: string): void => {
       if (disabled || writeDisabled) return
       setError(null)
-      updateAction?.({ key, position }).isPersisted.promise.catch(
+      updateAction?.({ key, position }).when(`settled`).catch(
         (err: Error) => {
           setError(err.message)
         }
@@ -1010,9 +1007,8 @@ function NativeEntityContextDrawer({
           tags: e.tags,
           spawn_args: e.spawn_args,
         }))
-    },
-    [entitiesCollection, referencedEntityUrls]
-  )
+    }
+)
 
   const entitiesByUrl = useMemo(
     () =>

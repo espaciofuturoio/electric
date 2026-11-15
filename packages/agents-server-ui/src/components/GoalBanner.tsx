@@ -20,13 +20,10 @@ interface GoalBannerProps {
 }
 
 export function GoalBanner({ db }: GoalBannerProps): React.ReactElement | null {
-  const { data: manifests = [] } = useLiveQuery(
-    (q) => {
-      if (!db) return undefined
-      return q.from({ manifest: db.collections.manifests })
-    },
-    [db]
-  )
+  const { data: manifests = [] } = useLiveQuery((q) => {
+    if (!db) return undefined
+    return q.from({ manifest: db.collections.manifests })
+  })
   const goal = useMemo<GoalRow | null>(() => {
     for (const m of manifests as Array<Manifest>) {
       if (m.kind === `goal`) {
