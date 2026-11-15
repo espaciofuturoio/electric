@@ -2,7 +2,7 @@ name: ef base images
 
 # Weekly: raise the sync image's Elixir/OTP/Debian base to the newest PATCH on the same Elixir minor and OTP major
 # (.github/ef/base-images.sh), as a PR that auto-merges when `ef tests` is green. Node's base is the floating
-# `node:22-bookworm-slim`, refreshed by ef-fork-images.yml's weekly no-cache rebuild; Dependabot proposes the tag change.
+# `node:22-trixie-slim`, refreshed by ef-fork-images.yml's weekly no-cache rebuild; Dependabot proposes the tag change.
 # Rollback: revert the merged PR; images already published keep their digests.
 
 on:
