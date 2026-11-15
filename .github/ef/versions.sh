@@ -22,7 +22,7 @@ table="$(cat <<EOF
 | Sync service \`@core/sync-service\` | $(jq -r .version packages/sync-service/package.json) | $(ghrel neondatabase/electric '^@core/sync-service@' | sed 's/.*@//') (neondatabase/electric) |
 | Elixir | $(tool elixir) | $(ghrel elixir-lang/elixir "^v${EL%.*}\\\\.[0-9]+\$" | sed 's/^v//') (newest ${EL%.*}.x) |
 | Erlang/OTP | $(tool erlang) | $(ghrel erlang/otp "^OTP-${OT%%.*}\\\\.[0-9.]+\$" | sed 's/^OTP-//') (newest ${OT%%.*}.x) |
-| Node (coordinator base \`node:22-bookworm-slim\`, rebuilt weekly) | 22 | ${node22#v} |
+| Node (coordinator base \`node:22-trixie-slim\`, rebuilt weekly) | 22 | ${node22#v} |
 | Postgres (image smoke and boxes) | ${ours_pg:-?} | ${pg18} |
 | \`@earendil-works/pi-agent-core\` (Pi; pi-durable shares the core) | $(pin $R @earendil-works/pi-agent-core) | $(npmv @earendil-works/pi-agent-core) |
 | \`@durable-streams/server\` | $(pin $S @durable-streams/server) | $(npmv @durable-streams/server) |

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM node:22-bookworm-slim AS build
+FROM node:22-trixie-slim AS build
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
@@ -56,9 +56,17 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
   && cp -R packages/agents-server-ui/dist /prod/agents-server-ui/dist \
   && cp -R packages/agents-server/drizzle /prod/agents-server/drizzle
 
-FROM node:22-bookworm-slim AS runtime
+# Debian 13 (trixie): bookworm stopped receiving fixes for most of its packages (ai-agents plan 027 R2c-2:
+# libc CVE-2026-5450 had no bookworm fix). The weekly no-cache rebuild (ef-fork-images.yml) picks up base
+# patches; `apt-get upgrade` takes what landed after the base was built. npm/corepack are not used at runtime
+# (the entrypoint is `node dist/entrypoint.js`) and carried 10 high advisories, so they are removed.
+FROM node:22-trixie-slim AS runtime
 
 ENV NODE_ENV=production
+
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/* \
+  && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 
 COPY --from=build /prod /prod
 
