@@ -39,5 +39,5 @@ jobs:
           branch="ef/base-images-$(date -u +%Y%m%d)"
           git config user.name "ef-bot"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$branch"; git commit -qam "ef: sync image base — $SUMMARY"
-          echo "Patch-level base bump by ef-base-images.yml (same Elixir minor, OTP major, Debian trixie). Auto-merges when \`ef tests\` is green. Rollback: revert." > "$RUNNER_TEMP/body.md"
+          echo "Patch-level base bump by ef-base-images.yml (same Elixir minor, OTP major, Debian bookworm). Auto-merges when \`ef tests\` is green. Rollback: revert." > "$RUNNER_TEMP/body.md"
           .github/ef/bot-pr.sh "$branch" "ef: sync image base — $SUMMARY" "$RUNNER_TEMP/body.md" --auto
