@@ -1,6 +1,6 @@
 ARG ELIXIR_VERSION=1.20.5
 ARG OTP_VERSION=29.1.2
-ARG DEBIAN_VERSION=bookworm-20261104-slim
+ARG DEBIAN_VERSION=trixie-20261104-slim
 
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
@@ -49,7 +49,7 @@ RUN ls -l /builder/electric/_build
 FROM ${RUNNER_IMAGE} AS runner_setup
 
 RUN apt-get update -y && \
-  apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates curl && \
+  apt-get install -y libstdc++6 openssl libncurses6 locales ca-certificates curl && \
   apt-get clean && \
   rm -f /var/lib/apt/lists/*_*
 
