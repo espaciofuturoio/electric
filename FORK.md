@@ -70,6 +70,16 @@ and how a finding becomes a production change, one deploy at a time: the mainten
 <https://github.com/espaciofuturoio/ai-agents/blob/main/docs/ops/electric-stack-maintenance.md>. The monthly radar issue
 carries its checklist (§ Stack audit).
 
+**Inherited workflows disabled (2026-11-14).** GitHub turned Actions off on this fork «due to the scale of GitHub Actions
+usage» (the inherited upstream workflows: desktop/mobile builds on every PR sync, benchmarks, Claude review). After the
+owner re-enabled it, these were disabled with `gh workflow disable` (reversible: `gh workflow enable <name>`), because none
+covers what we ship (the coordinator and sync images): Agents Desktop Build, Agents Desktop PR, Agents Mobile Build,
+Agents Mobile Build (manual), Agents Mobile iOS Simulator, Agents Mobile PR, Auto-approve durable streams PRs, Benchmark
+a PR, Benchmark comments, Benchmark Electric image from DockerHub, Check Skills, Claude Code, Claude Code Review, Load test
+a PR, PR, Teardown Examples PR stack, and our finished `ef spike no sync`. Active: the `ef-*` workflows, Check Changeset
+and Dependabot Updates. A new upstream workflow arrives enabled with the monthly merge: the radar PR reviewer disables it
+unless it covers a shipped image.
+
 | Cadence | Piece | What it does | Rollback |
 | --- | --- | --- | --- |
 | every PR, push to `main`, weekly | `ef-tests.yml` | sync-service suite on Postgres 18 (+pgbouncer, one retry of failures only) and the agents-runtime / agents-server suites against our own sync image by digest. Required on `main`. | Remove the required checks in branch protection; disable the workflow. |
