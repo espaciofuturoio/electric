@@ -65,6 +65,11 @@ coordinator is proven by `ef-fork-images.yml`'s smoke on the new images.
 
 A standing practice, not a one-off. Every piece runs from this repo's Actions; each has its rollback.
 
+What these bots do not see (Go and Debian release support, the durable-streams engine fork, the consumers' lockfiles)
+and how a finding becomes a production change, one deploy at a time: the maintenance runbook
+<https://github.com/espaciofuturoio/ai-agents/blob/main/docs/ops/electric-stack-maintenance.md>. The monthly radar issue
+carries its checklist (§ Stack audit).
+
 | Cadence | Piece | What it does | Rollback |
 | --- | --- | --- | --- |
 | every PR, push to `main`, weekly | `ef-tests.yml` | sync-service suite on Postgres 18 (+pgbouncer, one retry of failures only) and the agents-runtime / agents-server suites against our own sync image by digest. Required on `main`. | Remove the required checks in branch protection; disable the workflow. |

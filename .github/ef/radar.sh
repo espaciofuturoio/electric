@@ -87,6 +87,23 @@ say "| R4b TanStack DB \`$(pin $R @tanstack/db)\` → 1.0 | 1.0 GA on npm | $ga 
 say "| R4a Pi \`$(pin $R @earendil-works/pi-agent-core)\` → \`$pi\` | the owner ends focus mode | owner's call |"
 say ""
 
+# --- 2c. stack audit (ai-agents docs/ops/electric-stack-maintenance.md) — what the bots above do not see ---------------
+say "## Stack audit (runbook: https://github.com/espaciofuturoio/ai-agents/blob/main/docs/ops/electric-stack-maintenance.md)"
+say ""
+gos="$(curl -fsS 'https://go.dev/dl/?mode=json' 2>/dev/null | python3 -I -c 'import json,sys; print(", ".join(r["version"] for r in json.load(sys.stdin)))' 2>/dev/null || echo '?')"
+stable="$(curl -fsS https://deb.debian.org/debian/dists/stable/Release 2>/dev/null | sed -n 's/^Codename: //p' || true)"
+bases="$(grep -hoE '(bookworm|trixie|forky)' packages/sync-service/Dockerfile packages/agents-server/Dockerfile 2>/dev/null | sort -u | tr '\n' ' ')"
+say "- Supported Go releases now: ${gos}. The durable-streams engine's builder (neo \`apps/fly-durable-streams/Dockerfile\`) must be on one of them."
+say "- Debian stable now: \`${stable:-?}\`; this fork's images build on: \`${bases:-?}\`. A base older than stable is a plan row (the base bot never crosses a Debian major)."
+say ""
+say "Checklist for this month (read only, \$0; commands in ai-agents plan 027 §R2c):"
+say "- [ ] grype on every deployed image by digest (runbook §1 inventory), base and app split"
+say "- [ ] govulncheck \`-mode=binary\` on the durable-streams engine from the Fly image"
+say "- [ ] osv-scanner on ai-agents' and neo's \`bun.lock\` (runtime closure) and \`apps/fly-durable-streams/bun.lock\`"
+say "- [ ] durable-streams upstream: did \`packages/caddy-plugin/go.mod\` move? (our fork: tag \`caddy-plugin-*-ef.*\`)"
+say "- [ ] findings over the threshold → plan rows → owner approval (runbook §2–4)"
+say ""
+
 # --- 3. advisories ---------------------------------------------------------------------------------------------------
 say "## Advisories"
 say ""
