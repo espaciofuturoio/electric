@@ -10,7 +10,7 @@ Our own agent runtime on top of Electric; how we keep it current: [FORK.md](FORK
 | Sync service `@core/sync-service` | 1.8.2 | 1.8.1 (neondatabase/electric) |
 | Elixir | 1.20.5 | 1.20.5 (newest 1.20.x) |
 | Erlang/OTP | 29.1.2 | 29.1.2 (newest 29.x) |
-| Node (coordinator base `node:22-bookworm-slim`, rebuilt weekly) | 22 | 22.23.5 |
+| Node (coordinator base `node:22-trixie-slim`, rebuilt weekly) | 22 | 22.23.5 |
 | Postgres (image smoke and boxes) | 18.7 | 18.7 |
 | `@earendil-works/pi-agent-core` (Pi; pi-durable shares the core) | ^0.85.1 | 1.5.2 |
 | `@durable-streams/server` | ^0.3.7 | 0.3.9 |
