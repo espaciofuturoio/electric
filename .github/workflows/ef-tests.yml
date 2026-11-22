@@ -1,7 +1,7 @@
 name: ef tests
 
 # The fork's own test gate (FORK.md § CI). Upstream's suites run on `blacksmith-*` runners this fork does not have, so
-# they never ran here; these jobs run the same suites on GitHub's runners, against what we ship: Postgres 18 (the minor
+# they never ran here; these jobs run the same suites on our Hetzner runner (label `ef-forks`), against what we ship: Postgres 18 (the minor
 # our boxes pin) and, for the coordinator, our own sync image by digest. Branch protection on `main` requires both
 # jobs; Dependabot / base-image / radar PRs auto-merge only when they are green.
 #
@@ -32,7 +32,9 @@ env:
 jobs:
   sync-service:
     name: sync-service (pg18)
-    runs-on: ubuntu-24.04
+    # A self-hosted runner never takes a fork's pull_request (public repo, hetzner-limits): only same-repo PRs, push, schedule, dispatch.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, ef-forks]
     timeout-minutes: 45
     defaults:
       run:
@@ -74,7 +76,9 @@ jobs:
 
   agents:
     name: agents-server + agents-runtime
-    runs-on: ubuntu-24.04
+    # A self-hosted runner never takes a fork's pull_request (public repo, hetzner-limits): only same-repo PRs, push, schedule, dispatch.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, ef-forks]
     timeout-minutes: 40
     env:
       DATABASE_URL: postgres://electric_agents:electric_agents@localhost:5432/electric_agents

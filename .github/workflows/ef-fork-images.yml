@@ -31,7 +31,7 @@ env:
 
 jobs:
   vars:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ef-forks]
     outputs:
       sha: ${{ steps.v.outputs.sha }}
       coordinator_tag: ${{ steps.v.outputs.coordinator_tag }}
@@ -68,7 +68,7 @@ jobs:
 
   coordinator:
     needs: vars
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ef-forks]
     outputs:
       digest: ${{ steps.push.outputs.digest }}
     steps:
@@ -100,7 +100,7 @@ jobs:
 
   sync:
     needs: vars
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ef-forks]
     outputs:
       digest: ${{ steps.push.outputs.digest }}
     steps:
@@ -137,7 +137,7 @@ jobs:
   # The stack our boxes run: postgres:18-alpine + sync + coordinator, pulled BY DIGEST from GHCR.
   smoke:
     needs: [vars, coordinator, sync]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ef-forks]
     env:
       C: ghcr.io/espaciofuturoio/electric-agents-server@${{ needs.coordinator.outputs.digest }}
       S: ghcr.io/espaciofuturoio/electric-sync-service@${{ needs.sync.outputs.digest }}
@@ -184,7 +184,7 @@ jobs:
 
   release:
     needs: [vars, coordinator, sync, smoke]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ef-forks]
     steps:
       - name: GitHub release with the digests
         env:

@@ -19,7 +19,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ef-forks]
     outputs:
       tag: ${{ steps.vars.outputs.tag }}
       digest: ${{ steps.push.outputs.digest }}
@@ -59,7 +59,7 @@ jobs:
 
   smoke:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ef-forks]
     steps:
       - uses: docker/login-action@v3
         with:
@@ -107,7 +107,7 @@ jobs:
 
   release:
     needs: [build, smoke]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ef-forks]
     steps:
       - uses: actions/checkout@v4
       - name: GitHub release

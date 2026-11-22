@@ -17,8 +17,9 @@ permissions:
 
 jobs:
   automerge:
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
-    runs-on: ubuntu-latest
+    # A self-hosted runner never takes a fork's pull_request (public repo, hetzner-limits).
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, ef-forks]
     steps:
       - id: meta
         uses: dependabot/fetch-metadata@v2
