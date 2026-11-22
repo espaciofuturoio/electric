@@ -19,6 +19,7 @@ env:
 
 jobs:
   build:
+    # GitHub-hosted: public fork, standard runners free; no self-hosted on public repos — owner 2026-11-22
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.vars.outputs.tag }}
@@ -59,6 +60,7 @@ jobs:
 
   smoke:
     needs: build
+    # GitHub-hosted: public fork, standard runners free; no self-hosted on public repos — owner 2026-11-22
     runs-on: ubuntu-latest
     steps:
       - uses: docker/login-action@v3
@@ -107,6 +109,7 @@ jobs:
 
   release:
     needs: [build, smoke]
+    # GitHub-hosted: public fork, standard runners free; no self-hosted on public repos — owner 2026-11-22
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
