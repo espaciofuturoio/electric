@@ -12,7 +12,7 @@ Our own agent runtime on top of Electric; how we keep it current: [FORK.md](FORK
 | Erlang/OTP | 29.1.2 | 29.1.2 (newest 29.x) |
 | Node (coordinator base `node:22-trixie-slim`, rebuilt weekly) | 22 | 22.23.5 |
 | Postgres (image smoke and boxes) | 18.7 | 18.7 |
-| `@earendil-works/pi-agent-core` (Pi; pi-durable shares the core) | ^0.85.1 | 1.5.2 |
+| `@earendil-works/pi-agent-core` (Pi; pi-durable shares the core) | ^0.85.1 | 1.6.0 |
 | `@durable-streams/server` | ^0.3.7 | 0.3.9 |
 | `@tanstack/db` | ^1.0.0-rc.1.5 | 1.0.0-rc.1.5 |
 | Latest image release | images-0.6.4-fork.fb8c0699a.w20261116 | — |
