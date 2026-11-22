@@ -32,6 +32,7 @@ env:
 jobs:
   sync-service:
     name: sync-service (pg18)
+    # GitHub-hosted: public fork, standard runners free; no self-hosted on public repos — owner 2026-11-22
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     defaults:
@@ -74,6 +75,7 @@ jobs:
 
   agents:
     name: agents-server + agents-runtime
+    # GitHub-hosted: public fork, standard runners free; no self-hosted on public repos — owner 2026-11-22
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     env:

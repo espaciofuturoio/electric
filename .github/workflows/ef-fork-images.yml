@@ -31,6 +31,7 @@ env:
 
 jobs:
   vars:
+    # GitHub-hosted: public fork, standard runners free; no self-hosted on public repos — owner 2026-11-22
     runs-on: ubuntu-latest
     outputs:
       sha: ${{ steps.v.outputs.sha }}
@@ -68,6 +69,7 @@ jobs:
 
   coordinator:
     needs: vars
+    # GitHub-hosted: public fork, standard runners free; no self-hosted on public repos — owner 2026-11-22
     runs-on: ubuntu-latest
     outputs:
       digest: ${{ steps.push.outputs.digest }}
@@ -100,6 +102,7 @@ jobs:
 
   sync:
     needs: vars
+    # GitHub-hosted: public fork, standard runners free; no self-hosted on public repos — owner 2026-11-22
     runs-on: ubuntu-latest
     outputs:
       digest: ${{ steps.push.outputs.digest }}
@@ -137,6 +140,7 @@ jobs:
   # The stack our boxes run: postgres:18-alpine + sync + coordinator, pulled BY DIGEST from GHCR.
   smoke:
     needs: [vars, coordinator, sync]
+    # GitHub-hosted: public fork, standard runners free; no self-hosted on public repos — owner 2026-11-22
     runs-on: ubuntu-latest
     env:
       C: ghcr.io/espaciofuturoio/electric-agents-server@${{ needs.coordinator.outputs.digest }}
@@ -184,6 +188,7 @@ jobs:
 
   release:
     needs: [vars, coordinator, sync, smoke]
+    # GitHub-hosted: public fork, standard runners free; no self-hosted on public repos — owner 2026-11-22
     runs-on: ubuntu-latest
     steps:
       - name: GitHub release with the digests

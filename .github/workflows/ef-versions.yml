@@ -28,6 +28,7 @@ concurrency:
 
 jobs:
   table:
+    # GitHub-hosted: public fork, standard runners free; no self-hosted on public repos — owner 2026-11-22
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -18,6 +18,7 @@ permissions:
 jobs:
   automerge:
     if: github.event.pull_request.user.login == 'dependabot[bot]'
+    # GitHub-hosted: public fork, standard runners free; no self-hosted on public repos — owner 2026-11-22
     runs-on: ubuntu-latest
     steps:
       - id: meta
