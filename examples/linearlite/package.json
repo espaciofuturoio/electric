@@ -63,7 +63,7 @@
     "tiptap-markdown": "^0.8.2",
     "uuid": "^9.0.0",
     "vite-plugin-svgr": "^3.2.0",
-    "zod": "^3.23.8"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@databases/pg-migrations": "^5.0.3",

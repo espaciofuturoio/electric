@@ -21,7 +21,7 @@
     "react-router-dom": "^6.23.1",
     "sst": "3.6.35",
     "uuid": "^10.0.0",
-    "zod": "^3.23.8"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@databases/pg-migrations": "^5.0.3",
