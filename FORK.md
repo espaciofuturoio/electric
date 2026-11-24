@@ -7,9 +7,10 @@ lives there. Nothing is posted upstream without the owner's go.
 
 ## Images (`.github/workflows/ef-fork-images.yml`)
 
-One manual run builds both images the agents stacks run from ONE commit of `main`, pushes them to GHCR (public),
+One run builds both images the agents stacks run from ONE commit of `main`, pushes them to GHCR (public),
 smoke-tests them together (postgres:18-alpine + sync + coordinator, pulled by digest: type registered, entity spawned,
-a restart keeps the type) and writes a GitHub release `images-<coordinator tag>` with both digests.
+a restart keeps the type) and writes a GitHub release `images-<coordinator tag>` with both digests. It starts by itself on a
+push to `main` that touches what the images are built from (a merge, no one needs Actions rights), weekly, or by hand.
 
 | Image | Tag |
 | --- | --- |
@@ -85,7 +86,7 @@ unless it covers a shipped image.
 | every PR, push to `main`, weekly | `ef-tests.yml` | sync-service suite on Postgres 18 (+pgbouncer, one retry of failures only) and the agents-runtime / agents-server suites against our own sync image by digest. Required on `main`. | Remove the required checks in branch protection; disable the workflow. |
 | weekly (Mon) | `dependabot.yml` + `ef-dependabot-automerge.yml` | One grouped PR per ecosystem (Hex, npm for the agents packages, the coordinator Dockerfile, Actions) with all patch + minor updates, auto-merged when `ef tests` is green; each major is its own PR, labelled `major-needs-review`, never auto-merged. Security updates on. | Disable the automerge workflow (`gh pr merge --disable-auto` on open PRs); delete `dependabot.yml`. |
 | weekly (Mon 05:07) | `ef-base-images.yml` (`.github/ef/base-images.sh`) | Sync image base: newest Elixir patch / OTP patch on the same minor/major and newest Debian bookworm slim; PR, tests, auto-merge. Never crosses a major. | Revert the PR. |
-| weekly (Mon 07:41) | `ef-fork-images.yml` (schedule) | Rebuilds `main` with `--pull --no-cache`, tags `<v>-fork.<sha9>.w<YYYYMMDD>`, smoke, release with digests — OS / Node / OpenSSL patches land without a code change. Consumers adopt a digest by PR (ai-agents `infra/fork-images.env`, neo's two session composes). | Consumers keep their pinned digests; disable the schedule. |
+| push to `main` (image inputs), weekly (Mon 07:41) | `ef-fork-images.yml` (push, schedule) | Rebuilds `main` with `--pull --no-cache`, tags `<v>-fork.<sha9>.w<YYYYMMDD>`, smoke, release with digests — OS / Node / OpenSSL patches land without a code change. Consumers adopt a digest by PR (ai-agents `infra/fork-images.env`, neo's two session composes). | Consumers keep their pinned digests; disable the schedule. |
 | weekly + push | `ef-versions.yml` (`.github/ef/versions.sh`) | The README table: this fork vs newest upstream / published for each key piece. PR, auto-merge. | Disable; the table just stops refreshing. |
 | monthly (1st) | `ef-radar.yml` (`.github/ef/radar.sh`) | Merges neondatabase/electric `main` into `ef/upstream-<YYYY-MM>` (or cherry-picks with a conflict note naming each skipped commit and its files), opens the PR (a person merges it as a MERGE commit), runs `ef tests` on it, and opens the issue «Fork radar <YYYY-MM>» with Pi (earendil-works/pi: pi-agent-core, pi-ai, pi-durable), Durable Streams, TanStack DB versions and the advisories (upstream GHSA, OSV over the Hex lock, `pnpm audit` over the coordinator's packages). | Disable; close the PR and delete the branch. |
 
