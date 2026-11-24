@@ -46,7 +46,7 @@
     "@electric-ax/agents-server-ui": "workspace:*",
     "@types/node": "^22.19.17",
     "concurrently": "^8.2.2",
-    "electron": "^41.5.0",
+    "electron": "^42.11.16",
     "electric-ax": "workspace:*",
     "electron-builder": "^26.8.1",
     "electron-icon-builder": "^2.0.1",
