@@ -15,7 +15,7 @@ Our own agent runtime on top of Electric; how we keep it current: [FORK.md](FORK
 | `@earendil-works/pi-agent-core` (Pi; pi-durable shares the core) | ^0.85.1 | 1.6.0 |
 | `@durable-streams/server` | ^0.3.7 | 0.3.9 |
 | `@tanstack/db` | ^1.0.0-rc.1.5 | 1.0.0-rc.1.5 |
-| Latest image release | images-0.6.4-fork.e9b012c9a | — |
+| Latest image release | images-0.6.4-fork.1b343d88b | — |
 <!-- ef-versions:end -->
 
 <p align="center">
