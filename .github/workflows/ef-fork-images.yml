@@ -10,6 +10,25 @@ name: ef fork images
 # code change; those tags carry `.w<YYYYMMDD>` (e.g. 0.6.4-fork.3ad1182c2.w20261116).
 
 on:
+  # A merge to `main` that touches what the images are built from builds them, so releasing never needs a person with
+  # Actions rights to dispatch (doc 06 WS-SH6-2). The `images-*` release this workflow creates is a tag, not a push to
+  # `main`, so it cannot trigger itself; a tag that already exists is refused below, so two runs on one commit are harmless.
+  push:
+    branches: [main]
+    paths:
+      - 'packages/sync-service/**'
+      - 'packages/electric-telemetry/**'
+      - 'packages/agents-server/**'
+      - 'packages/agents-server-ui/**'
+      - 'packages/agents-runtime/**'
+      - 'packages/agents-mcp/**'
+      - 'packages/agents/**'
+      - 'packages/typescript-client/**'
+      - 'pnpm-lock.yaml'
+      - 'patches/**'
+      - 'tsconfig.base.json'
+      - 'tsconfig.build.json'
+      - '.github/workflows/ef-fork-images.yml'
   schedule:
     - cron: '41 7 * * 1' # Monday 07:41 UTC, after ef-base-images.yml had its chance to merge a base-image bump
   workflow_dispatch:
@@ -22,6 +41,11 @@ on:
 permissions:
   contents: write
   packages: write
+
+# One build at a time: two merges in a row queue instead of racing for GHCR and the release.
+concurrency:
+  group: ef-fork-images
+  cancel-in-progress: false
 
 env:
   # gh in a fork's runner may default to the PARENT repo (2026-11-14): every gh call here targets this repo.
