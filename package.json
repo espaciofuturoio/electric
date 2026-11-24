@@ -44,6 +44,7 @@
     },
     "overrides": {
       "@hono/node-server@>=1.0.0 <1.19.18": "^1.19.19",
+      "@modelcontextprotocol/sdk>@hono/node-server": "^2.1.11",
       "glob@>=11.0.0 <14.0.2": "^14.0.2",
       "minimatch@>=10.0.0 <11.0.1": "^11.0.1",
       "fast-uri@<3.1.9": "^3.1.9",
