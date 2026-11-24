@@ -44,7 +44,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwindcss": "^4.1.13",
-    "zod": "^4.0.14"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.51.2",

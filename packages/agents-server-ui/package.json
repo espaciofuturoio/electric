@@ -41,7 +41,7 @@
     "react-reconciler": "0.32.0",
     "shiki": "^4.0.2",
     "streamdown": "^2.5.0",
-    "zod": "^3.25.76"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",
