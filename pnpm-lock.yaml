@@ -192,8 +192,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/agents-runtime
       '@hono/node-server':
-        specifier: ^1.19.19
-        version: 1.19.19(hono@4.13.18)
+        specifier: ^2.1.6
+        version: 2.1.11(hono@4.13.18)
       '@sinclair/typebox':
         specifier: ^0.34.49
         version: 0.34.49
@@ -382,8 +382,8 @@ importers:
         specifier: ^1.7.17
         version: 1.7.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@hono/node-server':
-        specifier: ^1.19.19
-        version: 1.19.19(hono@4.13.18)
+        specifier: ^2.1.6
+        version: 2.1.11(hono@4.13.18)
       '@svgr/plugin-jsx':
         specifier: ^8.1.0
         version: 8.1.0(@svgr/core@8.1.0(typescript@5.6.3))
@@ -1492,8 +1492,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/y-electric
       '@hono/node-server':
-        specifier: ^1.19.19
-        version: 1.19.19(hono@4.13.18)
+        specifier: ^2.1.6
+        version: 2.1.11(hono@4.13.18)
       codemirror:
         specifier: ^6.0.1
         version: 6.0.1(@lezer/common@1.2.3)
@@ -6702,12 +6702,6 @@ packages:
     peerDependencies:
       react: ^16 || ^17 || ^18
       react-dom: ^16 || ^17 || ^18
-
-  '@hono/node-server@1.19.19':
-    resolution: {integrity: sha512-Fy9R7PACOzHU9LDpfnuzVyuVYevKQRcEG2mZhmfc+DRdmayEd3RVfa2XOt2IgGcPNgA77Yk63KBszepcMFK5Ng==}
-    engines: {node: '>=18.14.1'}
-    peerDependencies:
-      hono: ^4.13.16
 
   '@hono/node-server@2.1.11':
     resolution: {integrity: sha512-KzKz9vl4vvr1vgLHamj+g5uonbrj5NwAdO3yzOS6cd2HjALVeOgTgeZOyAzNxejbkfOOPIcvuf/Tg8l1pEFLog==}
@@ -12680,8 +12674,8 @@ packages:
   caniuse-lite@1.0.30001791:
     resolution: {integrity: sha512-yk0l/YSrOnFZk3UROpDLQD9+kC1l4meK/wed583AXrzoarMGJcbRi2Q4RaUYbKxYAsZ8sWmaSa/DsLmdBeI1vQ==}
 
-  caniuse-lite@1.0.30001827:
-    resolution: {integrity: sha512-YWEDr46gSO81M8w6uPbaIy4++IXsirx2asUqvllNiD4BPf75ibxclUjWEqp8ObCenRv+UM2n5Y8xuRPT8V8FrQ==}
+  caniuse-lite@1.0.30001828:
+    resolution: {integrity: sha512-7MWeT+3DlrpuDybTWHl4Zb1Z80Z1fLLnOXuBjDXebzDVcqnEWUlV8JcbASg8B8BhcW8QT2UiR1KAtzYFIZHZYA==}
 
   caseless@0.12.0:
     resolution: {integrity: sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==}
@@ -27659,10 +27653,6 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@hono/node-server@1.19.19(hono@4.13.18)':
-    dependencies:
-      hono: 4.13.18
-
   '@hono/node-server@2.1.11(hono@4.13.18)':
     dependencies:
       hono: 4.13.18
@@ -35128,7 +35118,7 @@ snapshots:
   browserslist@4.29.6:
     dependencies:
       baseline-browser-mapping: 2.11.39
-      caniuse-lite: 1.0.30001827
+      caniuse-lite: 1.0.30001828
       electron-to-chromium: 1.5.493
       node-releases: 2.0.65
       update-browserslist-db: 1.4.0(browserslist@4.29.6)
@@ -35292,7 +35282,7 @@ snapshots:
 
   caniuse-lite@1.0.30001791: {}
 
-  caniuse-lite@1.0.30001827: {}
+  caniuse-lite@1.0.30001828: {}
 
   caseless@0.12.0: {}
 
