@@ -22,7 +22,7 @@
   "engineManager": "^pnpm@9.15.0",
   "devDependencies": {
     "@netlify/edge-functions": "^3.0.6",
-    "@redocly/cli": "^1.34.17",
+    "@redocly/cli": "^1.34.24",
     "@types/jsdom": "^28.0.1",
     "@types/turndown": "^5.0.6",
     "chart.js": "^4.4.7",
