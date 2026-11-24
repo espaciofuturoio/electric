@@ -48,12 +48,12 @@ coordinator is proven by `ef-fork-images.yml`'s smoke on the new images.
 
 **Not applied, and why**
 
-- `protobuf` ≥0.16.1 (recursion DoS decoding protobuf/JSON): only `otel_metric_exporter` uses it, to ENCODE metrics
+- `protobuf` ≥0.17.1 (recursion DoS decoding protobuf/JSON): only `otel_metric_exporter` uses it, to ENCODE metrics
   for an OTLP endpoint no stack configures; upstream pins `~> 0.13.0, override: true` because ≥0.14 clashes with Protox
   (pg_query_ex). Revisit when that pin can move.
 - coordinator UI `zod` 3.x (GHSA-mrhx-c7xc-m3w5) and `katex` (GHSA-238p, low, needs a prior prototype pollution):
   browser-only in the operator console; zod 4 / katex 0.18 are major moves for a self-DoS. Renovate will raise them.
-- `ssl_verify_fun` 1.1.7 (wildcard across labels): not in the prod release (`mix deps.update` refuses it in `prod`).
+- `ssl_verify_fun` 1.1.7 (wildcard across labels): IS in the prod release (the daily radar read `/app/lib`, doc 06 WS-SH3) but unreachable: only `otel_exporter_otlp` uses it and that runs only with `ELECTRIC_OTLP_ENDPOINT`, set in no stack.
 - vite / vitest / undici / jsdom advisories: test tooling (`agents-server-conformance-tests`), not in any image.
 - Upstream open PRs: none is a security fix for sync or agents. Robustness fixes worth a later cherry-pick (radar):
   #4711 (terminate serves whose clients stop reading), #4838/#4837 (SSE), #4685 (non-English PG errors). Agents

@@ -1,0 +1,104 @@
+{
+ "_why": "Verdicts of the daily advisory radar (dev-playbook scripts/advisory-radar.py, doc 06 WS-SH3) for the advisories this fork's monthly radar lists. The monthly radar runs on a public GitHub-hosted runner with no Fly/GCP access, so it reads this snapshot, never a secret. An entry past its review_by, or no entry, prints UNVERIFIED (never \u00abnot affected\u00bb). Refresh from `advisory-radar.py --json` when the daily radar changes a verdict.",
+ "source": "https://github.com/espaciofuturoio/dev-playbook/pull/783",
+ "verdicts": [
+  {
+   "ids": [
+    "GHSA-m4f6-p2j8-rq76"
+   ],
+   "affected": false,
+   "reason": "fixed in 1.7.12; deployed neo-electric runs 1.8.1-ef.2",
+   "reviewed": "2026-11-24",
+   "review_by": "2026-12-24"
+  },
+  {
+   "ids": [
+    "GHSA-c82q-v86f-c87f"
+   ],
+   "affected": false,
+   "reason": "fixed in 1.6.10; deployed neo-electric runs 1.8.1-ef.2",
+   "reviewed": "2026-11-24",
+   "review_by": "2026-12-24"
+  },
+  {
+   "ids": [
+    "GHSA-h5rg-pxx7-r2hj"
+   ],
+   "affected": false,
+   "reason": "fixed in 1.5.0; deployed neo-electric runs 1.8.1-ef.2",
+   "reviewed": "2026-11-24",
+   "review_by": "2026-12-24"
+  },
+  {
+   "package": "protobuf",
+   "versions": [
+    "0.13.0"
+   ],
+   "ids": [
+    "GHSA-rv48-qqj5-crxg",
+    "EEF-CVE-2026-104635",
+    "GHSA-m497-c2h9-rvw6"
+   ],
+   "affected": false,
+   "reason": "in the prod release but unreachable: only otel_metric_exporter's generated decode/1 calls it, and the exporter starts only with ELECTRIC_OTLP_ENDPOINT, absent in every stack",
+   "reviewed": "2026-11-24",
+   "review_by": "2026-12-24"
+  },
+  {
+   "package": "ssl_verify_fun",
+   "versions": [
+    "1.1.7"
+   ],
+   "ids": [
+    "EEF-CVE-2026-117666",
+    "GHSA-7gw2-hphm-c5px",
+    "CVE-2026-117666"
+   ],
+   "affected": false,
+   "reason": "IS in the prod release (FORK.md said otherwise) but only otel_exporter_otlp reaches it, and that runs only with ELECTRIC_OTLP_ENDPOINT, absent in every stack",
+   "reviewed": "2026-11-24",
+   "review_by": "2026-12-24"
+  },
+  {
+   "package": "zod",
+   "ids": [
+    "GHSA-mrhx-c7xc-m3w5"
+   ],
+   "affected": false,
+   "reason": "zod 4.6.7 in the server images is fixed; zod 3 is only in the operator console's browser bundle (self-DoS)",
+   "reviewed": "2026-11-24",
+   "review_by": "2026-12-24"
+  },
+  {
+   "package": "phoenix",
+   "ids": [
+    "EEF-CVE-2026-128361",
+    "EEF-CVE-2026-129344"
+   ],
+   "affected": true,
+   "reason": "phoenix is in the deployed neo-electric image and inside the advisory's range (daily radar, informe 2026-11-24-advisory-radar.md \u00a72); bump it and redeploy",
+   "reviewed": "2026-11-24",
+   "review_by": "2026-12-24"
+  },
+  {
+   "package": "phoenix_live_view",
+   "ids": [
+    "EEF-CVE-2026-126334"
+   ],
+   "affected": true,
+   "reason": "phoenix_live_view is in the deployed neo-electric image and inside the advisory's range (daily radar, informe 2026-11-24-advisory-radar.md \u00a72); bump it and redeploy",
+   "reviewed": "2026-11-24",
+   "review_by": "2026-12-24"
+  },
+  {
+   "package": "plug",
+   "ids": [
+    "EEF-CVE-2026-120287"
+   ],
+   "affected": true,
+   "reason": "plug is in the deployed neo-electric image and inside the advisory's range (daily radar, informe 2026-11-24-advisory-radar.md \u00a72); bump it and redeploy",
+   "reviewed": "2026-11-24",
+   "review_by": "2026-12-24"
+  }
+ ]
+}
